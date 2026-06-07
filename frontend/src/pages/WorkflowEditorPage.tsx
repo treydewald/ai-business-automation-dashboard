@@ -103,17 +103,23 @@ const WorkflowEditorContent: React.FC<{ workflowId?: string; initialWorkflow?: a
   };
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
+    <div className="h-screen flex flex-col bg-neon-bg text-neon-text">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b p-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between gap-4">
+      <div className="sticky top-0 z-40 border-b-2 border-neon-divider bg-neon-bg/95 backdrop-blur-glass">
+        <div className="px-8 py-5 max-w-full">
+          <div className="flex items-center justify-between gap-6">
             <div className="flex-1">
+              <button
+                onClick={() => navigate(-1)}
+                className="text-neon-text-secondary hover:text-neon-accent transition font-bold text-lg mb-2"
+              >
+                ← Back
+              </button>
               <Input
                 value={editor.name}
                 onChange={e => editor.setName(e.target.value)}
                 placeholder="Workflow name (required)"
-                className="font-semibold"
+                className="font-bold text-2xl bg-neon-surface border-neon-divider text-neon-text placeholder-neon-text-secondary"
               />
             </div>
             <div className="flex gap-2">
@@ -138,10 +144,7 @@ const WorkflowEditorContent: React.FC<{ workflowId?: string; initialWorkflow?: a
                 disabled={saving}
                 variant="primary"
               >
-                {saving ? 'Saving...' : 'Save Workflow'}
-              </Button>
-              <Button onClick={() => navigate(-1)} variant="secondary">
-                Cancel
+                {saving ? 'Saving...' : '✓ Save'}
               </Button>
             </div>
           </div>
@@ -150,7 +153,7 @@ const WorkflowEditorContent: React.FC<{ workflowId?: string; initialWorkflow?: a
             onChange={e => editor.setDescription(e.target.value)}
             placeholder="Workflow description (optional)"
             rows={2}
-            className="mt-2"
+            className="mt-3 bg-neon-surface border-neon-divider text-neon-text placeholder-neon-text-secondary"
           />
         </div>
       </div>
@@ -158,9 +161,9 @@ const WorkflowEditorContent: React.FC<{ workflowId?: string; initialWorkflow?: a
       {/* Main Content */}
       <div className="flex-1 overflow-hidden flex">
         {/* Left Panel - Add Steps */}
-        <div className="w-64 bg-white shadow-sm border-r p-4 overflow-y-auto">
-          <h3 className="font-semibold text-gray-900 mb-3">Add Step</h3>
-          <div className="space-y-2 mb-3">
+        <div className="w-64 bg-neon-surface/50 border-r border-neon-divider p-4 overflow-y-auto">
+          <h3 className="font-bold text-neon-text mb-4 text-lg tracking-wide">ADD STEP</h3>
+          <div className="space-y-2 mb-4">
             <Select
               value={selectedStepType}
               onChange={e => setSelectedStepType(e.target.value)}
@@ -173,8 +176,8 @@ const WorkflowEditorContent: React.FC<{ workflowId?: string; initialWorkflow?: a
 
           {selectedNode && (
             <>
-              <hr className="my-4" />
-              <h3 className="font-semibold text-gray-900 mb-3">Configure Step</h3>
+              <div className="my-4 border-t border-neon-divider" />
+              <h3 className="font-bold text-neon-text mb-4 text-lg tracking-wide">CONFIGURE STEP</h3>
               <StepConfigPanel
                 node={selectedNode}
                 onUpdate={editor.updateNode}
@@ -185,7 +188,7 @@ const WorkflowEditorContent: React.FC<{ workflowId?: string; initialWorkflow?: a
         </div>
 
         {/* Center - Canvas */}
-        <div className="flex-1 overflow-hidden border-r bg-gray-100">
+        <div className="flex-1 overflow-hidden border-r border-neon-divider bg-neon-bg">
           <WorkflowCanvas
             nodes={editor.nodes}
             edges={editor.edges}
@@ -208,27 +211,30 @@ const WorkflowEditorContent: React.FC<{ workflowId?: string; initialWorkflow?: a
         </div>
 
         {/* Right Panel - Preview/Status */}
-        <div className="w-64 bg-white shadow-sm border-l p-4 overflow-y-auto">
-          <h3 className="font-semibold text-gray-900 mb-3">Workflow Summary</h3>
-          <div className="space-y-2 text-sm text-gray-600">
-            <p>
-              <strong>Steps:</strong> {editor.nodes.length}
-            </p>
-            <p>
-              <strong>Connections:</strong> {editor.edges.length}
-            </p>
-            <p>
-              <strong>Entry Point:</strong> {editor.entryPoint || '(none)'}
-            </p>
+        <div className="w-64 bg-neon-surface/50 border-l border-neon-divider p-4 overflow-y-auto">
+          <h3 className="font-bold text-neon-text mb-4 text-lg tracking-wide">WORKFLOW SUMMARY</h3>
+          <div className="space-y-3 text-sm text-neon-text-secondary">
+            <div className="p-3 rounded-lg bg-neon-primary/10 border border-neon-primary/30">
+              <p className="text-neon-text-secondary text-xs font-bold mb-1">STEPS</p>
+              <p className="text-2xl font-black text-neon-accent">{editor.nodes.length}</p>
+            </div>
+            <div className="p-3 rounded-lg bg-neon-accent/10 border border-neon-accent/30">
+              <p className="text-neon-text-secondary text-xs font-bold mb-1">CONNECTIONS</p>
+              <p className="text-2xl font-black text-neon-accent">{editor.edges.length}</p>
+            </div>
+            <div className="p-3 rounded-lg bg-neon-success/10 border border-neon-success/30">
+              <p className="text-neon-text-secondary text-xs font-bold mb-1">ENTRY POINT</p>
+              <p className="text-sm font-mono text-neon-success">{editor.entryPoint || '(none)'}</p>
+            </div>
           </div>
 
           {selectedNode && (
             <>
-              <hr className="my-4" />
-              <h3 className="font-semibold text-gray-900 mb-2">Selected Step</h3>
-              <div className="text-sm bg-blue-50 p-2 rounded border border-blue-200">
-                <p className="font-mono text-blue-900">{selectedNode.id}</p>
-                <p className="text-blue-700">{selectedNode.name}</p>
+              <div className="my-4 border-t border-neon-divider" />
+              <h3 className="font-bold text-neon-text mb-3 text-lg tracking-wide">SELECTED STEP</h3>
+              <div className="text-sm bg-neon-primary/10 p-3 rounded-lg border border-neon-primary/30">
+                <p className="font-mono text-neon-accent text-xs mb-1">{selectedNode.id}</p>
+                <p className="text-neon-text font-bold">{selectedNode.name}</p>
               </div>
             </>
           )}
@@ -236,7 +242,7 @@ const WorkflowEditorContent: React.FC<{ workflowId?: string; initialWorkflow?: a
       </div>
 
       {/* Messages */}
-      <div className="fixed bottom-4 right-4 max-w-sm space-y-2">
+      <div className="fixed bottom-4 right-4 max-w-sm space-y-2 z-50">
         {error && (
           <Alert
             type="error"

@@ -23,7 +23,7 @@ export function Select({
       {label && (
         <label
           htmlFor={selectId}
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          className="block text-sm font-bold text-neon-text-secondary uppercase tracking-widest mb-2"
         >
           {label}
         </label>
@@ -31,10 +31,10 @@ export function Select({
       <select
         id={selectId}
         className={[
-          'w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900',
-          'focus:border-primary-500 focus:outline-none focus:ring-primary-500',
-          'dark:border-gray-600 dark:bg-gray-700 dark:text-white',
-          error && 'border-error focus:ring-error',
+          'w-full rounded-lg border border-neon-divider bg-neon-surface px-3 py-2.5 text-neon-text',
+          'focus:border-neon-accent focus:outline-none focus:ring-1 focus:ring-neon-accent',
+          'transition-all duration-200 cursor-pointer',
+          error && 'border-neon-danger focus:ring-neon-danger',
           className,
         ]
           .filter(Boolean)
@@ -48,7 +48,7 @@ export function Select({
           </option>
         ))}
       </select>
-      {error && <p className="mt-1 text-sm text-error">{error}</p>}
+      {error && <p className="mt-1 text-sm text-neon-danger">{error}</p>}
     </div>
   );
 }

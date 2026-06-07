@@ -21,7 +21,7 @@ export function Textarea({
       {label && (
         <label
           htmlFor={textareaId}
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          className="block text-sm font-bold text-neon-text-secondary uppercase tracking-widest mb-2"
         >
           {label}
         </label>
@@ -29,20 +29,19 @@ export function Textarea({
       <textarea
         id={textareaId}
         className={[
-          'w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900',
-          'placeholder-gray-500 focus:border-primary-500 focus:outline-none focus:ring-primary-500',
-          'dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400',
-          'resize-none',
-          error && 'border-error focus:ring-error',
+          'w-full rounded-lg border border-neon-divider bg-neon-surface px-3 py-2.5 text-neon-text',
+          'placeholder-neon-text-secondary focus:border-neon-accent focus:outline-none focus:ring-1 focus:ring-neon-accent',
+          'resize-none transition-all duration-200',
+          error && 'border-neon-danger focus:ring-neon-danger',
           className,
         ]
           .filter(Boolean)
           .join(' ')}
         {...props}
       />
-      {error && <p className="mt-1 text-sm text-error">{error}</p>}
+      {error && <p className="mt-1 text-sm text-neon-danger">{error}</p>}
       {hint && !error && (
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{hint}</p>
+        <p className="mt-1 text-sm text-neon-text-secondary">{hint}</p>
       )}
     </div>
   );
