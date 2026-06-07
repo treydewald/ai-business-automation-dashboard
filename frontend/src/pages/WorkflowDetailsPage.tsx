@@ -10,7 +10,7 @@ import { Spinner } from '@components/Spinner';
 import { Modal } from '@components/Modal';
 
 export function WorkflowDetailsPage() {
-  const { workflowId } = useParams<{ workflowId: string }>();
+  const { workflowId = '' } = useParams<{ workflowId: string }>();
   const navigate = useNavigate();
   const { data: workflow, loading, error, refetch } = useWorkflow(workflowId);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
