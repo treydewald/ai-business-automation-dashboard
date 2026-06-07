@@ -109,8 +109,8 @@ Groups claim all work within their boundary. Cross-group dependencies are **cont
 ---
 
 ### Group Testing-Deploy: Quality & Containerization
-**Status:** UNCLAIMED  
-**Owner:** null  
+**Status:** IN_PROGRESS  
+**Owner:** Worker-haiku-20260607-007  
 **Isolation Level:** HIGH  
 **Allowed Operations:** Exclusive  
 **Dependency Groups:** Backend-Core, Frontend-Core  
@@ -348,7 +348,7 @@ WORKER_STATE:
     Foundation: COMPLETED
     Backend-Core: COMPLETED
     Frontend-Core: COMPLETED
-    Testing-Deploy: UNCLAIMED
+    Testing-Deploy: IN_PROGRESS
     Editor-Classification: COMPLETED
     Integration-System: UNCLAIMED
     Analytics-Security: UNCLAIMED
@@ -372,10 +372,10 @@ WORKER_STATE:
       blocking_dependencies: []
       owner: null
     Testing-Deploy:
-      status: UNCLAIMED
-      available_for_next_round: yes
+      status: IN_PROGRESS
+      available_for_next_round: no
       blocking_dependencies: []
-      owner: null
+      owner: Worker-haiku-20260607-007
     Editor-Classification:
       status: COMPLETED
       available_for_next_round: null
