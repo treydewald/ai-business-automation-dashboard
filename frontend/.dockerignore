@@ -1,0 +1,15 @@
+.git
+.gitignore
+node_modules
+npm-debug.log
+yarn-error.log
+.vscode
+.idea
+.env
+.env.local
+dist
+build
+.DS_Store
+*.log
+coverage
+.eslintcache
