@@ -645,3 +645,241 @@ class TestWebhookIntegration:
 
         result = webhook._parse_response(mock_response)
         assert result is None
+
+
+class TestHubSpotIntegration:
+    def test_hubspot_provider_initialization(self):
+        from app.integrations.hubspot import HubSpotIntegration
+
+        creds = {"api_key": "test_key_123"}
+        hubspot = HubSpotIntegration(creds)
+        assert hubspot.integration_type == "hubspot"
+
+    def test_hubspot_test_connection(self):
+        from app.integrations.hubspot import HubSpotIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {"api_key": "test_key_123"}
+        hubspot = HubSpotIntegration(creds)
+
+        with patch("requests.get") as mock_get:
+            mock_response = MagicMock()
+            mock_response.status_code = 200
+            mock_get.return_value = mock_response
+
+            result = hubspot.test_connection()
+            assert result is True
+
+    def test_hubspot_create_contact(self):
+        from app.integrations.hubspot import HubSpotIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {"api_key": "test_key_123"}
+        hubspot = HubSpotIntegration(creds)
+
+        with patch("requests.post") as mock_post:
+            mock_response = MagicMock()
+            mock_response.status_code = 201
+            mock_response.json.return_value = {
+                "id": "contact-123",
+                "properties": {"email": "test@example.com"},
+            }
+            mock_post.return_value = mock_response
+
+            result = hubspot.create_contact(
+                email="test@example.com",
+                properties={"firstname": "John"},
+            )
+            assert result["success"] is True
+            assert result["contact_id"] == "contact-123"
+
+    def test_hubspot_update_contact(self):
+        from app.integrations.hubspot import HubSpotIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {"api_key": "test_key_123"}
+        hubspot = HubSpotIntegration(creds)
+
+        with patch("requests.patch") as mock_patch:
+            mock_response = MagicMock()
+            mock_response.status_code = 200
+            mock_response.json.return_value = {
+                "id": "contact-123",
+                "properties": {"email": "test@example.com"},
+            }
+            mock_patch.return_value = mock_response
+
+            result = hubspot.update_contact(
+                contact_id="contact-123",
+                properties={"lastname": "Doe"},
+            )
+            assert result["success"] is True
+            assert result["updated"] is True
+
+    def test_hubspot_search_contacts(self):
+        from app.integrations.hubspot import HubSpotIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {"api_key": "test_key_123"}
+        hubspot = HubSpotIntegration(creds)
+
+        with patch("requests.post") as mock_post:
+            mock_response = MagicMock()
+            mock_response.status_code = 200
+            mock_response.json.return_value = {
+                "results": [
+                    {"id": "contact-1", "properties": {"email": "john@example.com"}},
+                    {"id": "contact-2", "properties": {"email": "jane@example.com"}},
+                ]
+            }
+            mock_post.return_value = mock_response
+
+            result = hubspot.search_contacts(query="example.com", limit=10)
+            assert result["success"] is True
+            assert result["count"] == 2
+
+    def test_hubspot_create_company(self):
+        from app.integrations.hubspot import HubSpotIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {"api_key": "test_key_123"}
+        hubspot = HubSpotIntegration(creds)
+
+        with patch("requests.post") as mock_post:
+            mock_response = MagicMock()
+            mock_response.status_code = 201
+            mock_response.json.return_value = {
+                "id": "company-123",
+                "properties": {"name": "Acme Inc"},
+            }
+            mock_post.return_value = mock_response
+
+            result = hubspot.create_company(
+                name="Acme Inc",
+                properties={"industry": "Technology"},
+            )
+            assert result["success"] is True
+            assert result["company_id"] == "company-123"
+
+    def test_hubspot_update_company(self):
+        from app.integrations.hubspot import HubSpotIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {"api_key": "test_key_123"}
+        hubspot = HubSpotIntegration(creds)
+
+        with patch("requests.patch") as mock_patch:
+            mock_response = MagicMock()
+            mock_response.status_code = 200
+            mock_response.json.return_value = {
+                "id": "company-123",
+                "properties": {"name": "Acme Inc"},
+            }
+            mock_patch.return_value = mock_response
+
+            result = hubspot.update_company(
+                company_id="company-123",
+                properties={"revenue": "1000000"},
+            )
+            assert result["success"] is True
+            assert result["updated"] is True
+
+    def test_hubspot_search_companies(self):
+        from app.integrations.hubspot import HubSpotIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {"api_key": "test_key_123"}
+        hubspot = HubSpotIntegration(creds)
+
+        with patch("requests.post") as mock_post:
+            mock_response = MagicMock()
+            mock_response.status_code = 200
+            mock_response.json.return_value = {
+                "results": [
+                    {"id": "company-1", "properties": {"name": "Acme Inc"}},
+                ]
+            }
+            mock_post.return_value = mock_response
+
+            result = hubspot.search_companies(query="Acme", limit=10)
+            assert result["success"] is True
+            assert result["count"] == 1
+
+    def test_hubspot_get_contact(self):
+        from app.integrations.hubspot import HubSpotIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {"api_key": "test_key_123"}
+        hubspot = HubSpotIntegration(creds)
+
+        with patch("requests.get") as mock_get:
+            mock_response = MagicMock()
+            mock_response.status_code = 200
+            mock_response.json.return_value = {
+                "id": "contact-123",
+                "properties": {"email": "test@example.com"},
+            }
+            mock_get.return_value = mock_response
+
+            result = hubspot.get_contact(contact_id="contact-123")
+            assert result["success"] is True
+            assert result["contact_id"] == "contact-123"
+
+    def test_hubspot_get_contact_not_found(self):
+        from app.integrations.hubspot import HubSpotIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {"api_key": "test_key_123"}
+        hubspot = HubSpotIntegration(creds)
+
+        with patch("requests.get") as mock_get:
+            mock_response = MagicMock()
+            mock_response.status_code = 404
+            mock_get.return_value = mock_response
+
+            result = hubspot.get_contact(contact_id="nonexistent")
+            assert result["success"] is False
+
+    def test_hubspot_get_company(self):
+        from app.integrations.hubspot import HubSpotIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {"api_key": "test_key_123"}
+        hubspot = HubSpotIntegration(creds)
+
+        with patch("requests.get") as mock_get:
+            mock_response = MagicMock()
+            mock_response.status_code = 200
+            mock_response.json.return_value = {
+                "id": "company-123",
+                "properties": {"name": "Acme Inc"},
+            }
+            mock_get.return_value = mock_response
+
+            result = hubspot.get_company(company_id="company-123")
+            assert result["success"] is True
+            assert result["company_id"] == "company-123"
+
+    def test_hubspot_execute_action(self):
+        from app.integrations.hubspot import HubSpotIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {"api_key": "test_key_123"}
+        hubspot = HubSpotIntegration(creds)
+
+        with patch("requests.post") as mock_post:
+            mock_response = MagicMock()
+            mock_response.status_code = 201
+            mock_response.json.return_value = {
+                "id": "contact-456",
+                "properties": {"email": "new@example.com"},
+            }
+            mock_post.return_value = mock_response
+
+            result = hubspot.execute(
+                "create_contact",
+                email="new@example.com",
+                properties={"firstname": "Jane"},
+            )
+            assert result["success"] is True
+            assert result["contact_id"] == "contact-456"

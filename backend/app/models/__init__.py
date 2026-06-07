@@ -3,6 +3,7 @@ from app.models.execution import Execution, ExecutionStatus
 from app.models.execution_log import ExecutionLog, LogLevel
 from app.models.trigger import Trigger, TriggerType
 from app.models.integration import Integration, IntegrationStatus
+from app.models.template import Template
 
 __all__ = [
     "Workflow",
@@ -15,4 +16,5 @@ __all__ = [
     "TriggerType",
     "Integration",
     "IntegrationStatus",
+    "Template",
 ]
