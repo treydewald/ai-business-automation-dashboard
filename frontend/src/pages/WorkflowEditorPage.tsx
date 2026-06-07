@@ -41,75 +41,144 @@ const WorkflowEditorContent: React.FC<{ workflowId?: string; initialWorkflow?: a
   React.useEffect(() => {
     if (!initialWorkflow && !workflowId && editor.nodes.length === 0) {
       // Set demo workflow name and description
-      editor.setName('Lead Qualification Pipeline');
-      editor.setDescription('Automatically qualifies incoming leads and routes them to appropriate sales teams based on fit score and budget.');
+      editor.setName('Enterprise Lead Processing Pipeline');
+      editor.setDescription('A comprehensive workflow that receives B2B leads, validates data quality, applies ML scoring, routes by fit, and orchestrates multi-channel engagement across Slack, email, and CRM systems.');
 
-      // Add demo steps
-      const step1: WorkflowNode = {
-        id: 'step-1',
-        name: 'Receive Lead',
-        type: 'webhook',
-        parameters: { method: 'POST', path: '/webhooks/leads' },
-        position: { x: 50, y: 150 },
-      };
+      // Define demo steps with professional portfolio-worthy layout
+      const demoSteps: WorkflowNode[] = [
+        // Input Layer
+        {
+          id: 'step-1',
+          name: 'Receive Lead via Webhook',
+          type: 'webhook',
+          parameters: { method: 'POST', path: '/webhooks/crm/leads', auth: 'bearer-token' },
+          position: { x: 50, y: 200 },
+        },
+        // Validation Layer
+        {
+          id: 'step-2',
+          name: 'Validate Email & Phone',
+          type: 'action',
+          parameters: { validation: 'email,phone,domain', timeout: '5s' },
+          position: { x: 280, y: 100 },
+        },
+        {
+          id: 'step-3',
+          name: 'Enrich Company Data',
+          type: 'action',
+          parameters: { source: 'clearbit-api', fields: 'industry,revenue,employees' },
+          position: { x: 280, y: 300 },
+        },
+        // Processing Layer
+        {
+          id: 'step-4',
+          name: 'Calculate Lead Score',
+          type: 'action',
+          parameters: { model: 'ml-lead-scoring-v3', weights: 'engagement:0.4,fit:0.35,budget:0.25' },
+          position: { x: 510, y: 200 },
+        },
+        // Routing Logic
+        {
+          id: 'step-5',
+          name: 'Score > 80?',
+          type: 'condition',
+          parameters: { operator: 'gte', field: 'score', value: '80' },
+          position: { x: 740, y: 200 },
+        },
+        // High-Score Path: Premium Sales
+        {
+          id: 'step-6',
+          name: 'Assign to Premium Sales',
+          type: 'action',
+          parameters: { queue: 'sales-premium', priority: 'high' },
+          position: { x: 970, y: 80 },
+        },
+        {
+          id: 'step-7',
+          name: 'Notify Sales on Slack',
+          type: 'slack',
+          parameters: { channel: '#sales-premium-leads', emoji: '🔥', mention: '@sales-lead' },
+          position: { x: 1200, y: 80 },
+        },
+        // Mid-Score Path: Standard Sales
+        {
+          id: 'step-8',
+          name: 'Assign to Sales Rep',
+          type: 'action',
+          parameters: { queue: 'sales-standard', assignment: 'round-robin' },
+          position: { x: 970, y: 200 },
+        },
+        {
+          id: 'step-9',
+          name: 'Send Welcome Email',
+          type: 'email',
+          parameters: { template: 'welcome-sales', campaign: 'outbound-2024' },
+          position: { x: 1200, y: 200 },
+        },
+        // Low-Score Path: Nurture Campaign
+        {
+          id: 'step-10',
+          name: 'Add to Nurture Track',
+          type: 'action',
+          parameters: { campaign: 'lead-nurture-90day', segment: 'low-fit' },
+          position: { x: 970, y: 320 },
+        },
+        {
+          id: 'step-11',
+          name: 'Sync to Drip Campaign',
+          type: 'email',
+          parameters: { platform: 'hubspot', series: 'nurture-sequence' },
+          position: { x: 1200, y: 320 },
+        },
+        // Final logging
+        {
+          id: 'step-12',
+          name: 'Log to Analytics',
+          type: 'action',
+          parameters: { service: 'segment', event: 'lead_processed', tags: 'crm,sales' },
+          position: { x: 1200, y: 200 },
+        },
+      ];
 
-      const step2: WorkflowNode = {
-        id: 'step-2',
-        name: 'Validate Lead Data',
-        type: 'action',
-        parameters: { validation: 'email,phone' },
-        position: { x: 250, y: 150 },
-      };
+      // Add all nodes
+      demoSteps.forEach(step => editor.addNode(step));
 
-      const step3: WorkflowNode = {
-        id: 'step-3',
-        name: 'Score Lead Quality',
-        type: 'action',
-        parameters: { scoringModel: 'ml-v2' },
-        position: { x: 450, y: 150 },
-      };
+      // Define connections showing the workflow logic
+      const connections = [
+        // Main flow: validation -> enrichment
+        { source: 'step-1', target: 'step-2' },
+        { source: 'step-1', target: 'step-3' },
 
-      const step4: WorkflowNode = {
-        id: 'step-4',
-        name: 'Route by Score',
-        type: 'condition',
-        parameters: { operator: 'gt', threshold: 75 },
-        position: { x: 650, y: 150 },
-      };
+        // Both validations complete before scoring
+        { source: 'step-2', target: 'step-4' },
+        { source: 'step-3', target: 'step-4' },
 
-      const step5: WorkflowNode = {
-        id: 'step-5',
-        name: 'Notify Sales Team',
-        type: 'slack',
-        parameters: { channel: '#sales-leads', message: 'New qualified lead' },
-        position: { x: 850, y: 100 },
-      };
+        // Score then route
+        { source: 'step-4', target: 'step-5' },
 
-      const step6: WorkflowNode = {
-        id: 'step-6',
-        name: 'Add to Drip Campaign',
-        type: 'email',
-        parameters: { campaign: 'welcome-series' },
-        position: { x: 850, y: 250 },
-      };
+        // High-score path (score >= 80)
+        { source: 'step-5', target: 'step-6' },
+        { source: 'step-6', target: 'step-7' },
 
-      // Add nodes
-      editor.addNode(step1);
-      editor.addNode(step2);
-      editor.addNode(step3);
-      editor.addNode(step4);
-      editor.addNode(step5);
-      editor.addNode(step6);
+        // Mid-score path (score 60-79)
+        { source: 'step-5', target: 'step-8' },
+        { source: 'step-8', target: 'step-9' },
 
-      // Add connections
-      editor.addEdge('step-1', 'step-2');
-      editor.addEdge('step-2', 'step-3');
-      editor.addEdge('step-3', 'step-4');
-      editor.addEdge('step-4', 'step-5');
-      editor.addEdge('step-4', 'step-6');
+        // Low-score path (score < 60)
+        { source: 'step-5', target: 'step-10' },
+        { source: 'step-10', target: 'step-11' },
 
-      setSuccess('Demo workflow loaded! Explore the builder to modify steps and connections.');
-      setTimeout(() => setSuccess(null), 5000);
+        // All paths eventually log
+        { source: 'step-7', target: 'step-12' },
+        { source: 'step-9', target: 'step-12' },
+        { source: 'step-11', target: 'step-12' },
+      ];
+
+      // Add all connections
+      connections.forEach(conn => editor.addEdge(conn.source, conn.target));
+
+      setSuccess('✨ Professional demo workflow loaded! 12 steps, 3 decision branches, email & Slack integration.');
+      setTimeout(() => setSuccess(null), 6000);
     }
   }, []);
 
