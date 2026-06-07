@@ -11,6 +11,7 @@ import { LoginPage } from '@pages/LoginPage';
 import { TemplateLibrary } from '@pages/TemplateLibrary';
 import { AlertsPage } from '@pages/AlertsPage';
 import { CustomIntegrationBuilder } from '@pages/CustomIntegrationBuilder';
+import { VisualizationDashboard } from '@pages/VisualizationDashboard';
 import './index.css';
 
 function App() {
@@ -19,7 +20,9 @@ function App() {
       <ThemeProvider>
         <Router>
           <Routes>
-            <Route path="/" element={<WorkflowDashboard />} />
+            <Route path="/" element={<VisualizationDashboard />} />
+            <Route path="/visualization" element={<VisualizationDashboard />} />
+            <Route path="/visualization/:workflowId" element={<VisualizationDashboard />} />
             <Route path="/workflows" element={<WorkflowDashboard />} />
             <Route path="/workflows/new" element={<WorkflowEditorPage />} />
             <Route path="/workflows/:workflowId" element={<WorkflowDetailsPage />} />

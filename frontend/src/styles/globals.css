@@ -4,24 +4,20 @@
 
 @layer base {
   :root {
-    /* Primary colors */
-    --color-primary: #0ea5e9;
-    --color-primary-dark: #0284c7;
-    --color-primary-light: #38bdf8;
-
-    /* Semantic colors */
-    --color-success: #22c55e;
-    --color-warning: #eab308;
-    --color-error: #ef4444;
-    --color-info: #0ea5e9;
-
-    /* Neutral colors */
-    --color-bg: #ffffff;
-    --color-bg-secondary: #f9fafb;
-    --color-text: #1f2937;
-    --color-text-secondary: #6b7280;
-    --color-border: #e5e7eb;
-    --color-shadow: rgba(0, 0, 0, 0.1);
+    /* Neon Indigo Ops System (Dark Mode Default) */
+    --color-bg: #0B1020;
+    --color-bg-secondary: rgba(20, 30, 60, 0.6);
+    --color-primary: #6366F1;
+    --color-primary-dark: #4F46E5;
+    --color-primary-light: #818CF8;
+    --color-accent: #22D3EE;
+    --color-success: #34D399;
+    --color-warning: #FBBF24;
+    --color-error: #F87171;
+    --color-text: #F8FAFC;
+    --color-text-secondary: #CBD5E1;
+    --color-border: rgba(100, 116, 139, 0.3);
+    --color-shadow: rgba(0, 0, 0, 0.5);
 
     /* Spacing */
     --spacing-xs: 0.25rem;
@@ -43,13 +39,20 @@
     --transition-slow: 300ms ease-in-out;
   }
 
-  html.dark {
-    --color-bg: #1f2937;
-    --color-bg-secondary: #111827;
-    --color-text: #f3f4f6;
-    --color-text-secondary: #9ca3af;
-    --color-border: #374151;
-    --color-shadow: rgba(0, 0, 0, 0.3);
+  html.light {
+    --color-bg: #ffffff;
+    --color-bg-secondary: #f9fafb;
+    --color-primary: #0ea5e9;
+    --color-primary-dark: #0284c7;
+    --color-primary-light: #38bdf8;
+    --color-accent: #0ea5e9;
+    --color-success: #22c55e;
+    --color-warning: #eab308;
+    --color-error: #ef4444;
+    --color-text: #1f2937;
+    --color-text-secondary: #6b7280;
+    --color-border: #e5e7eb;
+    --color-shadow: rgba(0, 0, 0, 0.1);
   }
 
   html,
@@ -63,13 +66,24 @@
   body {
     background-color: var(--color-bg);
     color: var(--color-text);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
       'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
       sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     transition: background-color var(--transition-base),
       color var(--transition-base);
+    background-image:
+      linear-gradient(
+        90deg,
+        rgba(99, 102, 241, 0.03) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        rgba(99, 102, 241, 0.03) 1px,
+        transparent 1px
+      );
+    background-size: 40px 40px;
   }
 
   h1,
@@ -97,31 +111,94 @@
     @apply mx-auto px-4 sm:px-6 lg:px-8;
   }
 
+  /* Glassmorphism utilities */
+  .glass {
+    @apply rounded-xl border border-neon-divider bg-neon-surface backdrop-blur-glass transition-all duration-200;
+  }
+
+  .glass:hover {
+    @apply bg-neon-surface-hover;
+  }
+
+  .glass-lg {
+    @apply glass shadow-lg;
+  }
+
+  /* Status glow utilities */
+  .glow-cyan {
+    @apply shadow-glow-cyan;
+  }
+
+  .glow-cyan-lg {
+    @apply shadow-glow-cyan-lg;
+  }
+
+  .glow-indigo {
+    @apply shadow-glow-indigo;
+  }
+
+  .glow-red {
+    @apply shadow-glow-red;
+  }
+
+  .pulse-glow {
+    @apply animate-pulse-glow;
+  }
+
+  /* Button styles */
   .btn {
-    @apply inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors;
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-lg font-semibold transition-all duration-200;
   }
 
   .btn-primary {
-    @apply btn bg-primary-600 text-white hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600;
+    @apply btn bg-neon-primary text-white hover:shadow-glow-indigo hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-secondary {
-    @apply btn bg-gray-200 text-gray-900 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600;
+    @apply btn glass text-neon-text hover:bg-neon-surface-hover disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-danger {
-    @apply btn bg-error text-white hover:bg-red-700 dark:hover:bg-red-600;
+    @apply btn bg-neon-danger text-white hover:shadow-glow-red hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
+  /* Card styles */
   .card {
-    @apply rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800 shadow-sm;
+    @apply glass p-6;
   }
 
   .card-body {
     @apply p-6;
   }
 
+  /* Input styles */
   .input {
-    @apply w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-primary-500 focus:outline-none focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400;
+    @apply w-full rounded-lg border border-neon-divider bg-neon-surface px-4 py-2 text-neon-text placeholder-neon-text-secondary focus:border-neon-accent focus:outline-none focus:ring-1 focus:ring-neon-accent transition-all duration-200;
+  }
+
+  /* Code/log styles */
+  .code {
+    @apply font-mono text-sm;
+  }
+
+  /* Status indicator styles */
+  .status-indicator {
+    @apply inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold;
+  }
+
+  .status-running {
+    @apply bg-opacity-20 bg-neon-accent text-neon-accent animate-pulse;
+  }
+
+  .status-success {
+    @apply bg-opacity-20 bg-neon-success text-neon-success;
+  }
+
+  .status-error {
+    @apply bg-opacity-20 bg-neon-danger text-neon-danger;
+  }
+
+  .status-pending {
+    @apply bg-opacity-20 bg-neon-warning text-neon-warning;
   }
 }

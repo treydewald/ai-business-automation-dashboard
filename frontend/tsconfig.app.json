@@ -33,7 +33,8 @@
       "@contexts/*": ["src/contexts/*"],
       "@utils/*": ["src/utils/*"],
       "@styles/*": ["src/styles/*"],
-      "@types/*": ["src/types/*"]
+      "@types/*": ["src/types/*"],
+      "@mocks/*": ["src/mocks/*"]
     }
   },
   "include": ["src"],

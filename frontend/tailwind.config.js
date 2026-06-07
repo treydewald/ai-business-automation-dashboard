@@ -8,6 +8,18 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Neon Indigo Ops System
+        'neon-bg': '#0B1020',
+        'neon-surface': 'rgba(20, 30, 60, 0.6)',
+        'neon-surface-hover': 'rgba(20, 30, 60, 0.8)',
+        'neon-primary': '#6366F1',
+        'neon-accent': '#22D3EE',
+        'neon-success': '#34D399',
+        'neon-warning': '#FBBF24',
+        'neon-danger': '#F87171',
+        'neon-text': '#F8FAFC',
+        'neon-text-secondary': '#CBD5E1',
+        'neon-divider': 'rgba(100, 116, 139, 0.3)',
         primary: {
           50: '#f0f9ff',
           100: '#e0f2fe',
@@ -44,6 +56,27 @@ export default {
       },
       animation: {
         'spin-slow': 'spin 2s linear infinite',
+        'pulse-glow': 'pulse-glow 2s infinite',
+        'soft-pulse': 'soft-pulse 2s infinite',
+      },
+      keyframes: {
+        'pulse-glow': {
+          '0%, 100%': { boxShadow: '0 0 12px rgba(34, 211, 238, 0.5)' },
+          '50%': { boxShadow: '0 0 20px rgba(34, 211, 238, 0.8)' },
+        },
+        'soft-pulse': {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.7' },
+        },
+      },
+      backdropBlur: {
+        'glass': '20px',
+      },
+      boxShadow: {
+        'glow-cyan': '0 0 12px rgba(34, 211, 238, 0.5)',
+        'glow-cyan-lg': '0 0 20px rgba(34, 211, 238, 0.7)',
+        'glow-indigo': '0 0 16px rgba(99, 102, 241, 0.4)',
+        'glow-red': '0 0 12px rgba(248, 113, 113, 0.4)',
       },
     },
   },

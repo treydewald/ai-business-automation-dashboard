@@ -274,13 +274,17 @@ export const WorkflowEditorPage: React.FC = () => {
   }
 
   // Map API workflow to editor initial state format
+  const parsedDefinition = typeof existingWorkflow?.definition === 'string'
+    ? JSON.parse(existingWorkflow.definition)
+    : existingWorkflow?.definition;
+
   const initialWorkflow = existingWorkflow
     ? {
         name: existingWorkflow.name,
         description: existingWorkflow.description || '',
-        nodes: existingWorkflow.definition?.nodes || [],
-        edges: existingWorkflow.definition?.edges || [],
-        entryPoint: existingWorkflow.definition?.entryPoint || '',
+        nodes: (parsedDefinition as any)?.nodes || [],
+        edges: (parsedDefinition as any)?.edges || [],
+        entryPoint: (parsedDefinition as any)?.entryPoint || '',
       }
     : undefined;
 
