@@ -171,8 +171,8 @@ Groups claim all work within their boundary. Cross-group dependencies are **cont
 ---
 
 ### Group Integration-System: Integration Framework & Providers
-**Status:** IN_PROGRESS  
-**Owner:** Worker-haiku-20250607-001  
+**Status:** UNCLAIMED  
+**Owner:** null  
 **Isolation Level:** MEDIUM  
 **Allowed Operations:** Exclusive  
 **Dependency Groups:** Backend-Core  
@@ -198,8 +198,8 @@ Groups claim all work within their boundary. Cross-group dependencies are **cont
 ---
 
 ### Group Analytics-Security: Analytics, Auth & Enterprise Features
-**Status:** IN_PROGRESS  
-**Owner:** Worker-haiku-20260607-008  
+**Status:** COMPLETED  
+**Owner:** null  
 **Isolation Level:** MEDIUM  
 **Allowed Operations:** Exclusive  
 **Dependency Groups:** Backend-Core, Frontend-Core  
@@ -240,8 +240,8 @@ Groups claim all work within their boundary. Cross-group dependencies are **cont
 ---
 
 ### Group Performance: Optimization & Versioning
-**Status:** IN_PROGRESS  
-**Owner:** Worker-haiku-4.5-20260607-001  
+**Status:** UNCLAIMED  
+**Owner:** null  
 **Isolation Level:** HIGH  
 **Allowed Operations:** Exclusive  
 **Dependency Groups:** Backend-Core, Frontend-Core  
@@ -351,7 +351,7 @@ WORKER_STATE:
     Testing-Deploy: COMPLETED
     Editor-Classification: COMPLETED
     Integration-System: UNCLAIMED
-    Analytics-Security: UNCLAIMED
+    Analytics-Security: COMPLETED
     Performance: UNCLAIMED
     Future-Enterprise: UNCLAIMED
   
@@ -382,24 +382,24 @@ WORKER_STATE:
       blocking_dependencies: []
       owner: null
     Integration-System:
-      status: IN_PROGRESS
-      available_for_next_round: no
+      status: UNCLAIMED
+      available_for_next_round: yes
       blocking_dependencies: []
-      owner: Worker-haiku-20250607-001
+      owner: null
     Analytics-Security:
       status: COMPLETED
       available_for_next_round: null
       blocking_dependencies: []
       owner: null
     Performance:
-      status: IN_PROGRESS
-      available_for_next_round: no
+      status: UNCLAIMED
+      available_for_next_round: yes
       blocking_dependencies: []
-      owner: Worker-haiku-4.5-20260607-001
+      owner: null
     Future-Enterprise:
       status: UNCLAIMED
-      available_for_next_round: no
-      blocking_dependencies: [Analytics-Security]
+      available_for_next_round: yes
+      blocking_dependencies: []
       owner: null
 ```
 
