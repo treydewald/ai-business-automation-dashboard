@@ -52,8 +52,8 @@ Groups claim all work within their boundary. Cross-group dependencies are **cont
 ---
 
 ### Group Backend-Core: Execution Engine & APIs
-**Status:** UNCLAIMED  
-**Owner:** null  
+**Status:** IN_PROGRESS  
+**Owner:** Worker-haiku-20260607-006  
 **Isolation Level:** MEDIUM  
 **Allowed Operations:** Exclusive  
 **Dependency Groups:** Foundation  
@@ -346,7 +346,7 @@ WORKER_STATE:
   group_claim_log: []
   group_status:
     Foundation: COMPLETED
-    Backend-Core: UNCLAIMED
+    Backend-Core: IN_PROGRESS
     Frontend-Core: COMPLETED
     Testing-Deploy: UNCLAIMED
     Editor-Classification: COMPLETED
@@ -361,10 +361,10 @@ WORKER_STATE:
       available_for_next_round: null
       owner: null
     Backend-Core:
-      status: UNCLAIMED
-      available_for_next_round: true
+      status: IN_PROGRESS
+      available_for_next_round: false
       blocking_dependencies: []
-      owner: null
+      owner: Worker-haiku-20260607-006
     Frontend-Core:
       status: COMPLETED
       available_for_next_round: null
