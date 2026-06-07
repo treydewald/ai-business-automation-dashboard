@@ -52,8 +52,8 @@ Groups claim all work within their boundary. Cross-group dependencies are **cont
 ---
 
 ### Group Backend-Core: Execution Engine & APIs
-**Status:** IN_PROGRESS  
-**Owner:** Worker-haiku-20260607-002  
+**Status:** UNCLAIMED  
+**Owner:** null  
 **Isolation Level:** MEDIUM  
 **Allowed Operations:** Exclusive  
 **Dependency Groups:** Foundation  
@@ -80,8 +80,8 @@ Groups claim all work within their boundary. Cross-group dependencies are **cont
 ---
 
 ### Group Frontend-Core: UI Foundation & Dashboards
-**Status:** IN_PROGRESS  
-**Owner:** Worker-haiku-20260607-002  
+**Status:** UNCLAIMED  
+**Owner:** null  
 **Isolation Level:** MEDIUM  
 **Allowed Operations:** Exclusive  
 **Dependency Groups:** Foundation  
@@ -109,8 +109,8 @@ Groups claim all work within their boundary. Cross-group dependencies are **cont
 ---
 
 ### Group Testing-Deploy: Quality & Containerization
-**Status:** IN_PROGRESS  
-**Owner:** Worker-haiku-20260607-003  
+**Status:** UNCLAIMED  
+**Owner:** null  
 **Isolation Level:** HIGH  
 **Allowed Operations:** Exclusive  
 **Dependency Groups:** Backend-Core, Frontend-Core  
@@ -345,15 +345,51 @@ WORKER_STATE:
   active_workers: []
   group_claim_log: []
   group_status:
-    Foundation: NOT_STARTED
-    Backend-Core: NOT_STARTED
-    Frontend-Core: NOT_STARTED
-    Testing-Deploy: NOT_STARTED
-    Editor-Classification: NOT_STARTED
-    Integration-System: NOT_STARTED
-    Analytics-Security: NOT_STARTED
-    Performance: NOT_STARTED
-    Future-Enterprise: NOT_STARTED
+    Foundation: COMPLETED
+    Backend-Core: UNCLAIMED
+    Frontend-Core: UNCLAIMED
+    Testing-Deploy: UNCLAIMED
+    Editor-Classification: COMPLETED
+    Integration-System: UNCLAIMED
+    Analytics-Security: UNCLAIMED
+    Performance: UNCLAIMED
+    Future-Enterprise: UNCLAIMED
+  
+  availability_map:
+    Foundation:
+      status: COMPLETED
+      available_for_next_round: null
+    Backend-Core:
+      status: UNCLAIMED
+      available_for_next_round: true
+      blocking_dependencies: []
+    Frontend-Core:
+      status: UNCLAIMED
+      available_for_next_round: true
+      blocking_dependencies: []
+    Testing-Deploy:
+      status: UNCLAIMED
+      available_for_next_round: false
+      blocking_dependencies: [Backend-Core, Frontend-Core]
+    Editor-Classification:
+      status: COMPLETED
+      available_for_next_round: null
+    Integration-System:
+      status: UNCLAIMED
+      available_for_next_round: false
+      blocking_dependencies: [Backend-Core]
+    Analytics-Security:
+      status: UNCLAIMED
+      available_for_next_round: false
+      blocking_dependencies: [Backend-Core, Frontend-Core]
+    Performance:
+      status: UNCLAIMED
+      available_for_next_round: false
+      blocking_dependencies: [Backend-Core, Frontend-Core]
+    Future-Enterprise:
+      status: UNCLAIMED
+      available_for_next_round: false
+      blocking_dependencies: [Analytics-Security, Backend-Core, Frontend-Core]
 ```
 
 **Claim Log Format:**
