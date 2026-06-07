@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from '@contexts/ThemeContext';
+import { WorkflowEditorPage } from './pages/WorkflowEditorPage';
 import './index.css';
 
 function App() {
@@ -22,6 +23,8 @@ function App() {
               </div>
             }
           />
+          <Route path="/workflows/new" element={<WorkflowEditorPage />} />
+          <Route path="/workflows/:workflowId/edit" element={<WorkflowEditorPage />} />
         </Routes>
       </Router>
     </ThemeProvider>
