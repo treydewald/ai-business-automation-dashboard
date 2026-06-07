@@ -3072,14 +3072,14 @@ Tier 2
 
 **Execution Metadata**
 ```
-status: NOT STARTED
+status: COMPLETED
 group: Performance
 execution_scope:
   group: Performance
-  owned_by: null
+  owned_by: Worker-haiku-20260607-pool-001
   file_boundary: strictly_enforced
 locked: false
-assigned_worker: null
+assigned_worker: Worker-haiku-20260607-pool-001
 is_blocked: false
 depends_on: [Feature 12, Feature 13, Feature 14, Feature 15]
 group_candidate: false
@@ -3526,14 +3526,14 @@ Tier 3
 
 **Execution Metadata**
 ```
-status: NOT STARTED
+status: COMPLETED
 group: Future-Enterprise
 execution_scope:
   group: Future-Enterprise
-  owned_by: null
+  owned_by: Worker-haiku-4.5-20260607-001
   file_boundary: strictly_enforced
 locked: false
-assigned_worker: null
+assigned_worker: Worker-haiku-4.5-20260607-001
 is_blocked: false
 depends_on: [Feature 06, Feature 28]
 group_candidate: false

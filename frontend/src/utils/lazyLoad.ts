@@ -1,4 +1,4 @@
-import { lazy, ComponentType, ReactNode } from 'react';
+import { lazy, type ComponentType } from 'react';
 
 /**
  * Lazy load a component with dynamic import
@@ -17,9 +17,7 @@ export const createLazyComponent = <P extends object>(
   importStatement: () => Promise<{ default: ComponentType<P> }>,
   displayName: string
 ): ComponentType<P> => {
-  const Component = lazy(importStatement);
-  Component.displayName = `Lazy(${displayName})`;
-  return Component;
+  return lazy(importStatement);
 };
 
 /**

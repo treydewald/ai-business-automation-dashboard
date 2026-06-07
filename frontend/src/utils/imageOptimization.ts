@@ -62,26 +62,17 @@ export class ImageOptimizer {
   }
 }
 
-export function OptimizedImage({
+// Note: React component removed - use ImageOptimizer utility directly in JSX
+export const createOptimizedImageProps = (
+  src: string,
+  alt: string,
+  maxWidth: number = 1200,
+  className: string = "object-cover"
+) => ({
   src,
+  srcSet: ImageOptimizer.generateSrcSet(src, maxWidth),
   alt,
-  maxWidth = 1200,
-  ...props
-}: {
-  src: string;
-  alt: string;
-  maxWidth?: number;
-} & React.ImgHTMLAttributes<HTMLImageElement>) {
-  const srcSet = ImageOptimizer.generateSrcSet(src, maxWidth);
-
-  return (
-    <img
-      {...props}
-      src={src}
-      srcSet={srcSet}
-      alt={alt}
-      loading="lazy"
-      className={props.className || "object-cover"}
-    />
-  );
-}
+  loading: 'lazy' as const,
+  className,
+  decoding: 'async' as const,
+});
