@@ -1,6 +1,7 @@
 ﻿from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import logging
+from app.api.routes import workflows
 
 app = FastAPI(
     title="AI Business Automation Dashboard API",
@@ -20,6 +21,9 @@ app.add_middleware(
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Include routers
+app.include_router(workflows.router)
 
 @app.get("/health")
 async def health_check():
