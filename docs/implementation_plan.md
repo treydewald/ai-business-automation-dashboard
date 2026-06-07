@@ -171,8 +171,8 @@ Groups claim all work within their boundary. Cross-group dependencies are **cont
 ---
 
 ### Group Integration-System: Integration Framework & Providers
-**Status:** UNCLAIMED  
-**Owner:** null  
+**Status:** IN_PROGRESS  
+**Owner:** Worker-haiku-20250607-001  
 **Isolation Level:** MEDIUM  
 **Allowed Operations:** Exclusive  
 **Dependency Groups:** Backend-Core  
@@ -382,10 +382,10 @@ WORKER_STATE:
       blocking_dependencies: []
       owner: null
     Integration-System:
-      status: UNCLAIMED
-      available_for_next_round: yes
+      status: IN_PROGRESS
+      available_for_next_round: no
       blocking_dependencies: []
-      owner: null
+      owner: Worker-haiku-20250607-001
     Analytics-Security:
       status: UNCLAIMED
       available_for_next_round: yes
