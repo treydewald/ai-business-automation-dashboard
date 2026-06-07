@@ -8,6 +8,7 @@ import ReactFlow, {
 import type { Node, Edge, Connection, NodeChange, ReactFlowInstance } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { StepNode } from './StepNode';
+import { SelectionContext } from '../contexts/SelectionContext';
 import type { WorkflowNode, WorkflowEdge } from '../utils/dagValidation';
 
 interface WorkflowCanvasProps {
@@ -39,7 +40,6 @@ export const WorkflowCanvas = React.forwardRef<{fitView: () => void}, WorkflowCa
     id: node.id,
     data: {
       node,
-      isSelected: selectedNodeId === node.id,
       onSelect: onNodeSelect,
       onDelete: onNodeDelete,
     },
@@ -79,19 +79,6 @@ export const WorkflowCanvas = React.forwardRef<{fitView: () => void}, WorkflowCa
     }, 150);
   }, [workflowNodes, workflowEdges, setNodes, setEdges]);
 
-  // Update selection state without triggering node/edge re-sync
-  useEffect(() => {
-    setNodes(prevNodes =>
-      prevNodes.map(node => ({
-        ...node,
-        data: {
-          ...node.data,
-          isSelected: selectedNodeId === node.id,
-        },
-      }))
-    );
-  }, [selectedNodeId, setNodes]);
-
   const handleNodesChange = useCallback((changes: NodeChange[]) => {
     onNodesChangeRF(changes);
     const updated = changes.map((change: any) => {
@@ -123,23 +110,25 @@ export const WorkflowCanvas = React.forwardRef<{fitView: () => void}, WorkflowCa
   );
 
   return (
-    <div style={{ width: '100%', height: '100%' }}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={handleNodesChange}
-        onEdgesChange={onEdgesChangeRF}
-        onConnect={handleConnect}
-        nodeTypes={nodeTypes}
-        onInit={(instance) => {
-          reactFlowRef.current = instance;
-          // Fit view on init
-          setTimeout(() => instance.fitView({ padding: 0.2 }), 100);
-        }}
-      >
-        <Background />
-        <Controls />
-      </ReactFlow>
-    </div>
+    <SelectionContext.Provider value={{ selectedNodeId }}>
+      <div style={{ width: '100%', height: '100%' }}>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={handleNodesChange}
+          onEdgesChange={onEdgesChangeRF}
+          onConnect={handleConnect}
+          nodeTypes={nodeTypes}
+          onInit={(instance) => {
+            reactFlowRef.current = instance;
+            // Fit view on init
+            setTimeout(() => instance.fitView({ padding: 0.2 }), 100);
+          }}
+        >
+          <Background />
+          <Controls />
+        </ReactFlow>
+      </div>
+    </SelectionContext.Provider>
   );
 });

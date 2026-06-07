@@ -1,11 +1,11 @@
 import React from 'react';
 import { Handle, Position } from 'reactflow';
+import { useSelection } from '../contexts/SelectionContext';
 import type { WorkflowNode } from '../utils/dagValidation';
 
 interface StepNodeProps {
   data: {
     node: WorkflowNode;
-    isSelected: boolean;
     onSelect: (nodeId: string) => void;
     onDelete: (nodeId: string) => void;
   };
@@ -22,7 +22,9 @@ const STEP_TYPE_COLORS: Record<string, string> = {
 };
 
 export const StepNode: React.FC<StepNodeProps> = ({ data }) => {
-  const { node, isSelected, onSelect, onDelete } = data;
+  const { node, onSelect, onDelete } = data;
+  const { selectedNodeId } = useSelection();
+  const isSelected = selectedNodeId === node.id;
   const colorClass = STEP_TYPE_COLORS[node.type] || 'bg-gray-100 border-gray-400';
 
   return (
