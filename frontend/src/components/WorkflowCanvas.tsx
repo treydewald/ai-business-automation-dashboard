@@ -4,9 +4,8 @@ import ReactFlow, {
   useEdgesState,
   Background,
   Controls,
-  useReactFlow,
 } from 'reactflow';
-import type { Node, Edge, Connection, NodeChange } from 'reactflow';
+import type { Node, Edge, Connection, NodeChange, ReactFlowInstance } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { StepNode } from './StepNode';
 import type { WorkflowNode, WorkflowEdge } from '../utils/dagValidation';
@@ -35,7 +34,7 @@ export const WorkflowCanvas = React.forwardRef<{fitView: () => void}, WorkflowCa
   onNodesChange,
   onConnect,
 }, ref) => {
-  const reactFlowInstance = useReactFlow();
+  const reactFlowRef = useRef<ReactFlowInstance | null>(null);
   const initialNodes: Node[] = workflowNodes.map(node => ({
     id: node.id,
     data: {
@@ -62,13 +61,11 @@ export const WorkflowCanvas = React.forwardRef<{fitView: () => void}, WorkflowCa
   // Expose fitView method via ref
   React.useImperativeHandle(ref, () => ({
     fitView: () => {
-      setTimeout(() => {
-        if (reactFlowInstance) {
-          reactFlowInstance.fitView({ padding: 0.2 });
-        }
-      }, 100);
+      if (reactFlowRef.current) {
+        reactFlowRef.current.fitView({ padding: 0.2 });
+      }
     },
-  }), [reactFlowInstance]);
+  }), []);
 
   // Sync ReactFlow nodes and edges when workflow nodes/edges change
   useEffect(() => {
@@ -76,11 +73,11 @@ export const WorkflowCanvas = React.forwardRef<{fitView: () => void}, WorkflowCa
     setEdges(initialEdges);
     // Fit view after nodes are set
     setTimeout(() => {
-      if (reactFlowInstance && initialNodes.length > 0) {
-        reactFlowInstance.fitView({ padding: 0.2 });
+      if (reactFlowRef.current && initialNodes.length > 0) {
+        reactFlowRef.current.fitView({ padding: 0.2 });
       }
-    }, 100);
-  }, [workflowNodes, workflowEdges, selectedNodeId, setNodes, setEdges, reactFlowInstance]);
+    }, 150);
+  }, [workflowNodes, workflowEdges, selectedNodeId, setNodes, setEdges]);
 
   const handleNodesChange = useCallback((changes: NodeChange[]) => {
     onNodesChangeRF(changes);
@@ -121,7 +118,11 @@ export const WorkflowCanvas = React.forwardRef<{fitView: () => void}, WorkflowCa
         onEdgesChange={onEdgesChangeRF}
         onConnect={handleConnect}
         nodeTypes={nodeTypes}
-        fitView
+        onInit={(instance) => {
+          reactFlowRef.current = instance;
+          // Fit view on init
+          setTimeout(() => instance.fitView({ padding: 0.2 }), 100);
+        }}
       >
         <Background />
         <Controls />
