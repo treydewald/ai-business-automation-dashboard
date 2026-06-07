@@ -64,7 +64,7 @@ export function WorkflowDetailsPage() {
       if (!response.ok) throw new Error('Failed to run workflow');
 
       const result = await response.json();
-      alert(`Workflow started with execution ID: ${result.id}`);
+      alert(`Workflow started with execution ID: ${result.execution_id || result.id}`);
       refetch();
     } catch (err) {
       alert(`Error running workflow: ${err instanceof Error ? err.message : 'Unknown error'}`);

@@ -48,7 +48,7 @@ export class PerformanceMonitor {
   }
 
   private static estimateBundleSize(): number {
-    return Math.round(window.performance.memory?.usedJSHeapSize || 0);
+    return Math.round((window.performance as any).memory?.usedJSHeapSize || 0);
   }
 
   static logPerformanceMetrics(): void {
@@ -63,15 +63,7 @@ export class PerformanceMonitor {
     });
   }
 
-  static reportWebVitals(callback: (metric: any) => void): void {
-    if ("web-vital" in window) {
-      const { getCLS, getFID, getFCP, getLCP, getTTFB } = require("web-vitals");
-
-      getFCP(callback);
-      getLCP(callback);
-      getCLS(callback);
-      getFID(callback);
-      getTTFB(callback);
-    }
+  static reportWebVitals(_callback: (metric: any) => void): void {
+    // web-vitals integration not available in this build
   }
 }

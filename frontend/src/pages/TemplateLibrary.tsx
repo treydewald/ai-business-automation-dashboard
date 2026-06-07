@@ -1,6 +1,5 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import type { ChangeEvent } from 'react';
 import { Button } from '@components/Button';
 import { Input } from '@components/Form/Input';
 import { Select } from '@components/Form/Select';
@@ -72,7 +71,7 @@ export function TemplateLibrary() {
     fetchTemplates();
   }, [fetchTemplates]);
 
-  const handleImportTemplate = useCallback(async (templateId: string, templateName: string) => {
+  const handleImportTemplate = useCallback(async (templateId: string, _templateName: string) => {
     try {
       const response = await fetch(`/api/templates/${templateId}/import`, {
         method: 'POST',
@@ -138,14 +137,11 @@ export function TemplateLibrary() {
               setCategoryFilter(e.target.value);
               setSkip(0);
             }}
-          >
-            <option value="">All Categories</option>
-            {categories.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </Select>
+            options={[
+              { value: '', label: 'All Categories' },
+              ...categories.map((cat) => ({ value: cat, label: cat }))
+            ]}
+          />
 
           <Button onClick={fetchTemplates} variant="secondary">
             Refresh

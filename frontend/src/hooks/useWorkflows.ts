@@ -27,12 +27,19 @@ export function useWorkflows(): UseWorkflowsResult {
   const fetchWorkflows = useCallback(async () => {
     setLoading(true);
     setError(null);
-    const result = await api.get<Workflow[]>('/workflows');
+    const result = await api.get<{ items: Workflow[] } | Workflow[]>('/workflows');
     if (result.error) {
       setError(result.error.message);
       setData([]);
     } else {
-      setData(result.data || []);
+      const raw = result.data;
+      if (Array.isArray(raw)) {
+        setData(raw);
+      } else if (raw && 'items' in raw && Array.isArray(raw.items)) {
+        setData(raw.items);
+      } else {
+        setData([]);
+      }
     }
     setLoading(false);
   }, []);

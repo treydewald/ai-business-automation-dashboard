@@ -33,12 +33,19 @@ export function useLogs(executionId?: string): UseLogsResult {
 
     setLoading(true);
     setError(null);
-    const result = await api.get<ExecutionLog[]>(`/executions/${executionId}/logs`);
+    const result = await api.get<{ items: ExecutionLog[] } | ExecutionLog[]>(`/executions/${executionId}/logs`);
     if (result.error) {
       setError(result.error.message);
       setData([]);
     } else {
-      setData(result.data || []);
+      const raw = result.data;
+      if (Array.isArray(raw)) {
+        setData(raw);
+      } else if (raw && 'items' in raw && Array.isArray(raw.items)) {
+        setData(raw.items);
+      } else {
+        setData([]);
+      }
     }
     setLoading(false);
   }, [executionId]);

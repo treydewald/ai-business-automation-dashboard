@@ -29,12 +29,19 @@ export function useExecutions(workflowId?: string): UseExecutionsResult {
     const endpoint = workflowId
       ? `/workflows/${workflowId}/executions`
       : '/executions';
-    const result = await api.get<Execution[]>(endpoint);
+    const result = await api.get<{ items: Execution[] } | Execution[]>(endpoint);
     if (result.error) {
       setError(result.error.message);
       setData([]);
     } else {
-      setData(result.data || []);
+      const raw = result.data;
+      if (Array.isArray(raw)) {
+        setData(raw);
+      } else if (raw && 'items' in raw && Array.isArray(raw.items)) {
+        setData(raw.items);
+      } else {
+        setData([]);
+      }
     }
     setLoading(false);
   }, [workflowId]);

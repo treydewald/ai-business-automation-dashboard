@@ -15,7 +15,7 @@ export const lazyLoadComponent = <P extends object>(
  */
 export const createLazyComponent = <P extends object>(
   importStatement: () => Promise<{ default: ComponentType<P> }>,
-  displayName: string
+  _displayName: string
 ): ComponentType<P> => {
   return lazy(importStatement);
 };

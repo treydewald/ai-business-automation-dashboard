@@ -25,7 +25,7 @@ export class ImageOptimizer {
       .join(", ");
   }
 
-  static shouldLazyLoad(imageElement: HTMLImageElement): boolean {
+  static shouldLazyLoad(_imageElement: HTMLImageElement): boolean {
     return "IntersectionObserver" in window;
   }
 

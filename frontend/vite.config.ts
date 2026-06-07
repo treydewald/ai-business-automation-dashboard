@@ -19,7 +19,7 @@ export default defineConfig({
   },
   build: {
     target: 'esnext',
-    minify: 'terser',
+    minify: false,
     rollupOptions: {
       output: [
         {
@@ -44,5 +44,11 @@ export default defineConfig({
   },
   server: {
     port: 4173,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+    },
   },
 })
