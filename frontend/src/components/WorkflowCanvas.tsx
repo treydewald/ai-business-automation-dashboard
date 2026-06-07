@@ -77,7 +77,20 @@ export const WorkflowCanvas = React.forwardRef<{fitView: () => void}, WorkflowCa
         reactFlowRef.current.fitView({ padding: 0.2 });
       }
     }, 150);
-  }, [workflowNodes, workflowEdges, selectedNodeId, setNodes, setEdges]);
+  }, [workflowNodes, workflowEdges, setNodes, setEdges]);
+
+  // Update selection state without triggering node/edge re-sync
+  useEffect(() => {
+    setNodes(prevNodes =>
+      prevNodes.map(node => ({
+        ...node,
+        data: {
+          ...node.data,
+          isSelected: selectedNodeId === node.id,
+        },
+      }))
+    );
+  }, [selectedNodeId, setNodes]);
 
   const handleNodesChange = useCallback((changes: NodeChange[]) => {
     onNodesChangeRF(changes);
