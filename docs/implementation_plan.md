@@ -267,8 +267,8 @@ Groups claim all work within their boundary. Cross-group dependencies are **cont
 ---
 
 ### Group Future-Enterprise: Advanced & Optional Features
-**Status:** UNCLAIMED  
-**Owner:** null  
+**Status:** IN_PROGRESS  
+**Owner:** Worker-haiku-4.5-20260607-001  
 **Isolation Level:** LOW  
 **Allowed Operations:** Exclusive  
 **Dependency Groups:** Analytics-Security, Backend-Core, Frontend-Core  
