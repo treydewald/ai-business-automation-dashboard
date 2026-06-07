@@ -359,6 +359,7 @@ WORKER_STATE:
     Foundation:
       status: COMPLETED
       available_for_next_round: null
+      blocking_dependencies: []
       owner: null
     Backend-Core:
       status: COMPLETED
@@ -368,35 +369,37 @@ WORKER_STATE:
     Frontend-Core:
       status: COMPLETED
       available_for_next_round: null
+      blocking_dependencies: []
       owner: null
     Testing-Deploy:
       status: UNCLAIMED
-      available_for_next_round: true
+      available_for_next_round: yes
       blocking_dependencies: []
       owner: null
     Editor-Classification:
       status: COMPLETED
       available_for_next_round: null
+      blocking_dependencies: []
       owner: null
     Integration-System:
       status: UNCLAIMED
-      available_for_next_round: true
+      available_for_next_round: yes
       blocking_dependencies: []
       owner: null
     Analytics-Security:
       status: UNCLAIMED
-      available_for_next_round: true
+      available_for_next_round: yes
       blocking_dependencies: []
       owner: null
     Performance:
       status: UNCLAIMED
-      available_for_next_round: true
+      available_for_next_round: yes
       blocking_dependencies: []
       owner: null
     Future-Enterprise:
       status: UNCLAIMED
-      available_for_next_round: false
-      blocking_dependencies: [Analytics-Security, Backend-Core, Frontend-Core]
+      available_for_next_round: no
+      blocking_dependencies: [Analytics-Security]
       owner: null
 ```
 
