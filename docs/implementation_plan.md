@@ -80,8 +80,8 @@ Groups claim all work within their boundary. Cross-group dependencies are **cont
 ---
 
 ### Group Frontend-Core: UI Foundation & Dashboards
-**Status:** UNCLAIMED  
-**Owner:** null  
+**Status:** IN_PROGRESS  
+**Owner:** Worker-haiku-20260607-002  
 **Isolation Level:** MEDIUM  
 **Allowed Operations:** Exclusive  
 **Dependency Groups:** Foundation  
