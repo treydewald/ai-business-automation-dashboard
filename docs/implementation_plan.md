@@ -52,8 +52,8 @@ Groups claim all work within their boundary. Cross-group dependencies are **cont
 ---
 
 ### Group Backend-Core: Execution Engine & APIs
-**Status:** IN_PROGRESS  
-**Owner:** Worker-haiku-20260607-005  
+**Status:** UNCLAIMED  
+**Owner:** null  
 **Isolation Level:** MEDIUM  
 **Allowed Operations:** Exclusive  
 **Dependency Groups:** Foundation  
@@ -346,8 +346,8 @@ WORKER_STATE:
   group_claim_log: []
   group_status:
     Foundation: COMPLETED
-    Backend-Core: IN_PROGRESS
-    Frontend-Core: UNCLAIMED
+    Backend-Core: UNCLAIMED
+    Frontend-Core: COMPLETED
     Testing-Deploy: UNCLAIMED
     Editor-Classification: COMPLETED
     Integration-System: UNCLAIMED
@@ -359,38 +359,45 @@ WORKER_STATE:
     Foundation:
       status: COMPLETED
       available_for_next_round: null
+      owner: null
     Backend-Core:
-      status: IN_PROGRESS
-      available_for_next_round: false
-      blocking_dependencies: []
-      owner: Worker-haiku-20260607-005
-    Frontend-Core:
       status: UNCLAIMED
       available_for_next_round: true
       blocking_dependencies: []
+      owner: null
+    Frontend-Core:
+      status: COMPLETED
+      available_for_next_round: null
+      owner: null
     Testing-Deploy:
       status: UNCLAIMED
       available_for_next_round: false
       blocking_dependencies: [Backend-Core, Frontend-Core]
+      owner: null
     Editor-Classification:
       status: COMPLETED
       available_for_next_round: null
+      owner: null
     Integration-System:
       status: UNCLAIMED
       available_for_next_round: false
       blocking_dependencies: [Backend-Core]
+      owner: null
     Analytics-Security:
       status: UNCLAIMED
       available_for_next_round: false
       blocking_dependencies: [Backend-Core, Frontend-Core]
+      owner: null
     Performance:
       status: UNCLAIMED
       available_for_next_round: false
       blocking_dependencies: [Backend-Core, Frontend-Core]
+      owner: null
     Future-Enterprise:
       status: UNCLAIMED
       available_for_next_round: false
       blocking_dependencies: [Analytics-Security, Backend-Core, Frontend-Core]
+      owner: null
 ```
 
 **Claim Log Format:**

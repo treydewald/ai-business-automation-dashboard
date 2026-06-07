@@ -1,33 +1,29 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, field_validator
 from datetime import datetime
-from typing import Optional, Dict, Any, List
+from typing import Optional, List
 
 class ExecutionLogCreate(BaseModel):
     step_name: str
     level: str
     message: str
-    context: Optional[Dict[str, Any]] = None
 
 class ExecutionLogResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True)
+
     id: str
     execution_id: str
     step_name: str
     level: str
     message: str
-    context_json: Optional[Dict[str, Any]]
     timestamp: datetime
 
-    class Config:
-        from_attributes = True
-
 class LogsListResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     logs: List[ExecutionLogResponse]
     total: int
     skip: int
     limit: int
-
-    class Config:
-        from_attributes = True
 
 class LogFilterParams(BaseModel):
     level: Optional[str] = None
