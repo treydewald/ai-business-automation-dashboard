@@ -1,9 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
+from typing import Optional
 from app.db import get_db
 from app.models import Workflow, WorkflowStatus
+from app.models.execution import Execution, ExecutionStatus
 from app.schemas import WorkflowCreate, WorkflowUpdate, WorkflowResponse
+from app.schemas.execution import ExecutionListResponse
 import uuid
 from datetime import datetime
 
@@ -102,3 +105,54 @@ def delete_workflow(workflow_id: str, db: Session = Depends(get_db)):
 
     workflow.deleted_at = datetime.utcnow()
     db.commit()
+
+@router.get("/{workflow_id}/executions", response_model=ExecutionListResponse)
+def get_workflow_executions(
+    workflow_id: str,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
+    status: Optional[str] = Query(None),
+    db: Session = Depends(get_db)
+):
+    """Get execution history for a workflow with pagination and filtering"""
+    workflow = db.query(Workflow).filter(
+        Workflow.id == workflow_id,
+        Workflow.deleted_at == None
+    ).first()
+
+    if not workflow:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+
+    query = db.query(Execution).filter(Execution.workflow_id == workflow_id)
+
+    if status:
+        try:
+            status_enum = ExecutionStatus(status.lower())
+            query = query.filter(Execution.status == status_enum)
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid status. Must be one of: {', '.join([s.value for s in ExecutionStatus])}"
+            )
+
+    total = query.count()
+    executions = query.order_by(Execution.created_at.desc()).offset(skip).limit(limit).all()
+
+    return {
+        "executions": [
+            {
+                "id": e.id,
+                "workflow_id": e.workflow_id,
+                "status": e.status.value,
+                "started_at": e.started_at,
+                "completed_at": e.completed_at,
+                "duration_seconds": e.duration_seconds,
+                "created_at": e.created_at,
+                "updated_at": e.updated_at
+            }
+            for e in executions
+        ],
+        "total": total,
+        "skip": skip,
+        "limit": limit
+    }
