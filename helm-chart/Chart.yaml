@@ -1,0 +1,16 @@
+apiVersion: v2
+name: automation-dashboard
+description: A Helm chart for AI Business Automation Dashboard
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+home: https://github.com/your-org/automation-dashboard
+sources:
+  - https://github.com/your-org/automation-dashboard
+maintainers:
+  - name: Your Organization
+    email: support@example.com
+keywords:
+  - automation
+  - workflow
+  - dashboard

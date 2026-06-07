@@ -1,0 +1,86 @@
+replicaCount:
+  backend: 2
+  frontend: 2
+
+namespace: automation-dashboard
+
+backend:
+  image: automation-dashboard-backend
+  tag: latest
+  pullPolicy: IfNotPresent
+  port: 8000
+  logLevel: info
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+
+frontend:
+  image: automation-dashboard-frontend
+  tag: latest
+  pullPolicy: IfNotPresent
+  port: 3000
+  apiUrl: http://localhost:8000/api
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "250m"
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 4
+    targetCPUUtilizationPercentage: 70
+
+postgresql:
+  enabled: true
+  auth:
+    username: admin
+    postgresPassword: changeme
+    database: automation_dashboard
+  primary:
+    persistence:
+      enabled: true
+      size: 10Gi
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: automation-dashboard.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: automation-dashboard-tls
+      hosts:
+        - automation-dashboard.example.com
+
+secrets:
+  jwtSecret: "changeme-jwt-secret-32-chars-min"
+  encryptionKey: "changeme-encryption-32-chars-min"
+  postgresPassword: "changeme"
+
+serviceMonitor:
+  enabled: false
+  interval: 30s
