@@ -143,8 +143,13 @@ const WorkflowEditorContent: React.FC<{ workflowId?: string; initialWorkflow?: a
         },
       ];
 
-      // Add all nodes first (synchronously to ensure all persist)
-      demoSteps.forEach(step => editor.addNode(step));
+      // Add nodes with minimal delays to allow state updates between each
+      // This ensures each addNode call sees the updated state from the previous call
+      demoSteps.forEach((step, index) => {
+        setTimeout(() => {
+          editor.addNode(step);
+        }, index * 5); // 5ms between each node (minimal delay for state to update)
+      });
 
       // Define connections showing the workflow logic
       const connections = [
@@ -177,8 +182,12 @@ const WorkflowEditorContent: React.FC<{ workflowId?: string; initialWorkflow?: a
         { source: 'step-11', target: 'step-12' },
       ];
 
-      // Add all connections (synchronously after all nodes are added)
-      connections.forEach(conn => editor.addEdge(conn.source, conn.target));
+      // Add all connections after nodes are done (at 12*5=60ms)
+      connections.forEach((conn, index) => {
+        setTimeout(() => {
+          editor.addEdge(conn.source, conn.target);
+        }, 60 + (index * 5));
+      });
 
       setSuccess('✨ Professional demo workflow loaded! 12 steps, 3 decision branches, email & Slack integration.');
       setTimeout(() => setSuccess(null), 6000);
