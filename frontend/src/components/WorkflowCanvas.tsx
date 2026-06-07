@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import ReactFlow, {
   useNodesState,
   useEdgesState,
   Background,
   Controls,
+  useReactFlow,
 } from 'reactflow';
 import type { Node, Edge, Connection, NodeChange } from 'reactflow';
 import 'reactflow/dist/style.css';
@@ -25,7 +26,7 @@ const nodeTypes = {
   step: StepNode,
 };
 
-export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
+export const WorkflowCanvas = React.forwardRef<{fitView: () => void}, WorkflowCanvasProps>(({
   nodes: workflowNodes,
   edges: workflowEdges,
   selectedNodeId,
@@ -33,7 +34,8 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
   onNodeDelete,
   onNodesChange,
   onConnect,
-}) => {
+}, ref) => {
+  const reactFlowInstance = useReactFlow();
   const initialNodes: Node[] = workflowNodes.map(node => ({
     id: node.id,
     data: {
@@ -57,11 +59,28 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
   const [nodes, setNodes, onNodesChangeRF] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChangeRF] = useEdgesState(initialEdges);
 
+  // Expose fitView method via ref
+  React.useImperativeHandle(ref, () => ({
+    fitView: () => {
+      setTimeout(() => {
+        if (reactFlowInstance) {
+          reactFlowInstance.fitView({ padding: 0.2 });
+        }
+      }, 100);
+    },
+  }), [reactFlowInstance]);
+
   // Sync ReactFlow nodes and edges when workflow nodes/edges change
   useEffect(() => {
     setNodes(initialNodes);
     setEdges(initialEdges);
-  }, [workflowNodes, workflowEdges, selectedNodeId, setNodes, setEdges]);
+    // Fit view after nodes are set
+    setTimeout(() => {
+      if (reactFlowInstance && initialNodes.length > 0) {
+        reactFlowInstance.fitView({ padding: 0.2 });
+      }
+    }, 100);
+  }, [workflowNodes, workflowEdges, selectedNodeId, setNodes, setEdges, reactFlowInstance]);
 
   const handleNodesChange = useCallback((changes: NodeChange[]) => {
     onNodesChangeRF(changes);
@@ -109,4 +128,4 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
       </ReactFlow>
     </div>
   );
-};
+});
