@@ -37,6 +37,82 @@ const WorkflowEditorContent: React.FC<{ workflowId?: string; initialWorkflow?: a
 
   const editor = useWorkflowEditor(initialWorkflow);
 
+  // Initialize demo workflow on first load (if no initial workflow provided)
+  React.useEffect(() => {
+    if (!initialWorkflow && !workflowId && editor.nodes.length === 0) {
+      // Set demo workflow name and description
+      editor.setName('Lead Qualification Pipeline');
+      editor.setDescription('Automatically qualifies incoming leads and routes them to appropriate sales teams based on fit score and budget.');
+
+      // Add demo steps
+      const step1: WorkflowNode = {
+        id: 'step-1',
+        name: 'Receive Lead',
+        type: 'webhook',
+        parameters: { method: 'POST', path: '/webhooks/leads' },
+        position: { x: 50, y: 150 },
+      };
+
+      const step2: WorkflowNode = {
+        id: 'step-2',
+        name: 'Validate Lead Data',
+        type: 'action',
+        parameters: { validation: 'email,phone' },
+        position: { x: 250, y: 150 },
+      };
+
+      const step3: WorkflowNode = {
+        id: 'step-3',
+        name: 'Score Lead Quality',
+        type: 'action',
+        parameters: { scoringModel: 'ml-v2' },
+        position: { x: 450, y: 150 },
+      };
+
+      const step4: WorkflowNode = {
+        id: 'step-4',
+        name: 'Route by Score',
+        type: 'condition',
+        parameters: { operator: 'gt', threshold: 75 },
+        position: { x: 650, y: 150 },
+      };
+
+      const step5: WorkflowNode = {
+        id: 'step-5',
+        name: 'Notify Sales Team',
+        type: 'slack',
+        parameters: { channel: '#sales-leads', message: 'New qualified lead' },
+        position: { x: 850, y: 100 },
+      };
+
+      const step6: WorkflowNode = {
+        id: 'step-6',
+        name: 'Add to Drip Campaign',
+        type: 'email',
+        parameters: { campaign: 'welcome-series' },
+        position: { x: 850, y: 250 },
+      };
+
+      // Add nodes
+      editor.addNode(step1);
+      editor.addNode(step2);
+      editor.addNode(step3);
+      editor.addNode(step4);
+      editor.addNode(step5);
+      editor.addNode(step6);
+
+      // Add connections
+      editor.addEdge('step-1', 'step-2');
+      editor.addEdge('step-2', 'step-3');
+      editor.addEdge('step-3', 'step-4');
+      editor.addEdge('step-4', 'step-5');
+      editor.addEdge('step-4', 'step-6');
+
+      setSuccess('Demo workflow loaded! Explore the builder to modify steps and connections.');
+      setTimeout(() => setSuccess(null), 5000);
+    }
+  }, []);
+
   const selectedNode = editor.nodes.find(n => n.id === selectedNodeId) || null;
 
   const addStep = () => {
