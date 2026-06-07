@@ -355,3 +355,89 @@ class TestSlackIntegration:
 
             result = slack.execute("send_message", text="Hello", channel="#general")
             assert result["success"] is True
+
+
+class TestEmailIntegration:
+    def test_email_provider_initialization(self):
+        from app.integrations.email import EmailIntegration
+
+        creds = {
+            "smtp_host": "smtp.gmail.com",
+            "smtp_port": 587,
+            "username": "user@example.com",
+            "password": "password",
+            "from_address": "user@example.com",
+        }
+        email = EmailIntegration(creds)
+        assert email.integration_type == "email"
+
+    def test_email_validation(self):
+        from app.integrations.email import EmailIntegration
+
+        creds = {"smtp_host": "smtp.example.com", "smtp_port": 587}
+        email = EmailIntegration(creds)
+
+        assert email._validate_email_addresses(["test@example.com"]) is True
+        assert email._validate_email_addresses(["invalid-email"]) is False
+        assert email._validate_email_addresses(["test@example.com", "another@test.org"]) is True
+
+    def test_email_interpolation(self):
+        from app.integrations.email import EmailIntegration
+
+        creds = {}
+        email = EmailIntegration(creds)
+
+        template = "Hello {{name}}, your order {{order_id}} is ready."
+        variables = {"name": "John", "order_id": "12345"}
+        result = email._interpolate(template, variables)
+        assert "John" in result
+        assert "12345" in result
+
+    def test_email_send_email(self):
+        from app.integrations.email import EmailIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {
+            "smtp_host": "smtp.example.com",
+            "smtp_port": 587,
+            "username": "user@example.com",
+            "password": "pass",
+            "from_address": "user@example.com",
+        }
+        email = EmailIntegration(creds)
+
+        with patch("smtplib.SMTP") as mock_smtp:
+            mock_server = MagicMock()
+            mock_smtp.return_value = mock_server
+
+            result = email.send_email(
+                to=["recipient@example.com"],
+                subject="Test",
+                body="Test email",
+            )
+            assert result["success"] is True
+
+    def test_email_execute_action(self):
+        from app.integrations.email import EmailIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {
+            "smtp_host": "smtp.example.com",
+            "smtp_port": 587,
+            "username": "user@example.com",
+            "password": "pass",
+            "from_address": "user@example.com",
+        }
+        email = EmailIntegration(creds)
+
+        with patch("smtplib.SMTP") as mock_smtp:
+            mock_server = MagicMock()
+            mock_smtp.return_value = mock_server
+
+            result = email.execute(
+                "send_email",
+                to=["test@example.com"],
+                subject="Hello",
+                body="Test message",
+            )
+            assert result["success"] is True
