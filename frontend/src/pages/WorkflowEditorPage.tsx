@@ -7,6 +7,7 @@ import { Input } from '../components/Form/Input';
 import { Textarea } from '../components/Form/Textarea';
 import { Select } from '../components/Form/Select';
 import { Alert } from '../components/Alert';
+import { Spinner } from '../components/Spinner';
 import { useWorkflowEditor } from '../hooks/useWorkflowEditor';
 import { useWorkflow } from '../hooks/useWorkflow';
 import { api } from '../services/api';
@@ -22,8 +23,11 @@ const STEP_TYPES = [
   { value: 'parallel', label: 'Parallel' },
 ];
 
-export const WorkflowEditorPage: React.FC = () => {
-  const { workflowId } = useParams<{ workflowId: string }>();
+// Inner component: only rendered once the initial workflow data is ready
+const WorkflowEditorContent: React.FC<{ workflowId?: string; initialWorkflow?: any }> = ({
+  workflowId,
+  initialWorkflow,
+}) => {
   const navigate = useNavigate();
   const [selectedStepType, setSelectedStepType] = useState('action');
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
@@ -31,9 +35,7 @@ export const WorkflowEditorPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  const { data: existingWorkflow } = useWorkflow(workflowId || '');
-
-  const editor = useWorkflowEditor(existingWorkflow as any);
+  const editor = useWorkflowEditor(initialWorkflow);
 
   const selectedNode = editor.nodes.find(n => n.id === selectedNodeId) || null;
 
@@ -256,4 +258,31 @@ export const WorkflowEditorPage: React.FC = () => {
       </div>
     </div>
   );
+};
+
+export const WorkflowEditorPage: React.FC = () => {
+  const { workflowId } = useParams<{ workflowId: string }>();
+  const { data: existingWorkflow, loading } = useWorkflow(workflowId || '');
+
+  // For new workflows, render immediately; for edits, wait until data loads
+  if (workflowId && loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <Spinner />
+      </div>
+    );
+  }
+
+  // Map API workflow to editor initial state format
+  const initialWorkflow = existingWorkflow
+    ? {
+        name: existingWorkflow.name,
+        description: existingWorkflow.description || '',
+        nodes: existingWorkflow.definition?.nodes || [],
+        edges: existingWorkflow.definition?.edges || [],
+        entryPoint: existingWorkflow.definition?.entryPoint || '',
+      }
+    : undefined;
+
+  return <WorkflowEditorContent workflowId={workflowId} initialWorkflow={initialWorkflow} />;
 };

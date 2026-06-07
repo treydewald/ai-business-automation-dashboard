@@ -290,6 +290,24 @@ async def get_analytics():
     }
 
 
+@app.get("/api/analytics/trends")
+async def get_analytics_trends():
+    from datetime import timedelta
+    import random
+    trends = []
+    base_date = datetime.now().date()
+    for i in range(7):
+        day = base_date - timedelta(days=6 - i)
+        executions = random.randint(100, 160)
+        success_rate = round(random.uniform(88, 98), 1)
+        trends.append({
+            "date": day.isoformat(),
+            "executions": executions,
+            "success_rate": success_rate,
+        })
+    return trends
+
+
 # Mock Trigger endpoint
 @app.post("/api/workflows/{workflow_id}/run")
 async def trigger_workflow(workflow_id: str):

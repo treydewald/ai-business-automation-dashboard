@@ -21,10 +21,11 @@ export interface Execution {
 }
 
 export interface ExecutionLog {
-  id: string;
-  execution_id: string;
-  step_name: string;
-  level: 'DEBUG' | 'INFO' | 'WARN' | 'ERROR';
+  id?: string;
+  execution_id?: string;
+  step: string;
+  step_name?: string;
+  level: 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'info' | 'debug' | 'warn' | 'error';
   message: string;
   timestamp: string;
   context_json?: Record<string, unknown>;

@@ -79,19 +79,20 @@ export function LogViewer({ executionId }: LogViewerProps) {
   const filteredLogs = logs.filter((log) => {
     let match = true;
     if (search) {
+      const stepLabel = (log.step || log.step_name || '').toLowerCase();
       match = match && (log.message.toLowerCase().includes(search.toLowerCase()) ||
-                        log.step_name.toLowerCase().includes(search.toLowerCase()));
+                        stepLabel.includes(search.toLowerCase()));
     }
     if (levelFilter) {
-      match = match && log.level === levelFilter;
+      match = match && log.level.toUpperCase() === levelFilter;
     }
     if (stepFilter) {
-      match = match && log.step_name === stepFilter;
+      match = match && (log.step || log.step_name) === stepFilter;
     }
     return match;
   });
 
-  const stepNames = [...new Set(logs.map((l) => l.step_name))];
+  const stepNames = [...new Set(logs.map((l) => l.step || l.step_name || ''))];
 
   const handleExport = (format: 'json' | 'csv' | 'txt') => {
     let content = '';
@@ -201,7 +202,7 @@ export function LogViewer({ executionId }: LogViewerProps) {
                     {log.level}
                   </Badge>
                 </span>
-                <span className="ml-2 text-blue-400">{log.step_name}:</span>
+                <span className="ml-2 text-blue-400">{log.step || log.step_name}:</span>
                 <span className={`ml-2 ${getLevelColor(log.level)}`}>{log.message}</span>
               </div>
             ))}

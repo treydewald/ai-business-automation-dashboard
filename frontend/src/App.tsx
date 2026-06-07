@@ -5,6 +5,7 @@ import { WorkflowEditorPage } from '@pages/WorkflowEditorPage';
 import { WorkflowDashboard } from '@pages/WorkflowDashboard';
 import { WorkflowDetailsPage } from '@pages/WorkflowDetailsPage';
 import { ExecutionDashboard } from '@pages/ExecutionDashboard';
+import { ExecutionDetailsPage } from '@pages/ExecutionDetailsPage';
 import { AnalyticsDashboard } from '@pages/AnalyticsDashboard';
 import { LoginPage } from '@pages/LoginPage';
 import { TemplateLibrary } from '@pages/TemplateLibrary';
@@ -24,6 +25,7 @@ function App() {
             <Route path="/workflows/:workflowId" element={<WorkflowDetailsPage />} />
             <Route path="/workflows/:workflowId/edit" element={<WorkflowEditorPage />} />
             <Route path="/executions" element={<ExecutionDashboard />} />
+            <Route path="/executions/:executionId" element={<ExecutionDetailsPage />} />
             <Route path="/analytics" element={<AnalyticsDashboard />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/templates" element={<TemplateLibrary />} />
