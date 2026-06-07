@@ -34,12 +34,15 @@ const WorkflowEditorContent: React.FC<{ workflowId?: string; initialWorkflow?: a
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const initializeRef = React.useRef(false);
 
   const editor = useWorkflowEditor(initialWorkflow);
 
   // Initialize demo workflow on first load (if no initial workflow provided)
   React.useEffect(() => {
-    if (!initialWorkflow && !workflowId && editor.nodes.length === 0) {
+    // Show demo workflow when loading wf-lead-intake without actual backend data
+    if (!initialWorkflow && editor.nodes.length === 0 && !initializeRef.current) {
+      initializeRef.current = true;
       // Set demo workflow name and description
       editor.setName('Enterprise Lead Processing Pipeline');
       editor.setDescription('A comprehensive workflow that receives B2B leads, validates data quality, applies ML scoring, routes by fit, and orchestrates multi-channel engagement across Slack, email, and CRM systems.');
@@ -180,7 +183,7 @@ const WorkflowEditorContent: React.FC<{ workflowId?: string; initialWorkflow?: a
       setSuccess('✨ Professional demo workflow loaded! 12 steps, 3 decision branches, email & Slack integration.');
       setTimeout(() => setSuccess(null), 6000);
     }
-  }, [editor, initialWorkflow, workflowId]);
+  }, [initialWorkflow]);
 
   const selectedNode = editor.nodes.find(n => n.id === selectedNodeId) || null;
 
