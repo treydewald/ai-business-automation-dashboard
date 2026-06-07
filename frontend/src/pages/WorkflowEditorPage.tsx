@@ -180,7 +180,7 @@ const WorkflowEditorContent: React.FC<{ workflowId?: string; initialWorkflow?: a
       setSuccess('✨ Professional demo workflow loaded! 12 steps, 3 decision branches, email & Slack integration.');
       setTimeout(() => setSuccess(null), 6000);
     }
-  }, []);
+  }, [editor, initialWorkflow, workflowId]);
 
   const selectedNode = editor.nodes.find(n => n.id === selectedNodeId) || null;
 

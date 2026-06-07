@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import ReactFlow, {
   useNodesState,
   useEdgesState,
@@ -54,8 +54,14 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
     animated: true,
   }));
 
-  const [nodes, , onNodesChangeRF] = useNodesState(initialNodes);
-  const [edges, , onEdgesChangeRF] = useEdgesState(initialEdges);
+  const [nodes, setNodes, onNodesChangeRF] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChangeRF] = useEdgesState(initialEdges);
+
+  // Sync ReactFlow nodes and edges when workflow nodes/edges change
+  useEffect(() => {
+    setNodes(initialNodes);
+    setEdges(initialEdges);
+  }, [workflowNodes, workflowEdges, selectedNodeId, setNodes, setEdges]);
 
   const handleNodesChange = useCallback((changes: NodeChange[]) => {
     onNodesChangeRF(changes);
