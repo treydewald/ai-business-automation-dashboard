@@ -1,0 +1,48 @@
+﻿{
+  "folders": [
+    {
+      "name": "Frontend",
+      "path": "C:\\Users\\Trey\\Projects\\ai-business-automation-dashboard\\frontend"
+    },
+    {
+      "name": "Backend",
+      "path": "C:\\Users\\Trey\\Projects\\ai-business-automation-dashboard\\backend"
+    },
+    {
+      "name": "Docs",
+      "path": "C:\\Users\\Trey\\Projects\\ai-business-automation-dashboard\\docs"
+    }
+  ],
+  "settings": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 1000,
+    "[python]": {
+      "editor.defaultFormatter": "ms-python.python",
+      "editor.formatOnSave": true
+    },
+    "[typescript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "python.defaultInterpreterPath": "C:\\Users\\Trey\\Projects\\ai-business-automation-dashboard\\backend\\.venv\\Scripts\\python.exe",
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "files.exclude": {
+      "**/__pycache__": true,
+      "**/node_modules": true,
+      "**/.venv": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "esbenp.prettier-vscode",
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "dbaeumer.vscode-eslint"
+    ]
+  }
+}
