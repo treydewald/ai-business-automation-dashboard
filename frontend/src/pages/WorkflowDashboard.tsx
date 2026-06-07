@@ -1,44 +1,31 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useWorkflows } from '../hooks/useWorkflows';
-import WorkflowList from '../components/WorkflowList';
-import Button from '../components/Button';
-import Input from '../components/Form/Input';
-import Select from '../components/Form/Select';
-import Card from '../components/Card';
-import Modal from '../components/Modal';
-import Spinner from '../components/Spinner';
+import type { ChangeEvent } from 'react';
+import { useWorkflows } from '@hooks/useWorkflows';
+import { WorkflowList } from '@components/WorkflowList';
+import { Button } from '@components/Button';
+import { Input } from '@components/Form/Input';
+import { Select } from '@components/Form/Select';
+import { Card } from '@components/Card';
+import { Modal } from '@components/Modal';
+import { Spinner } from '@components/Spinner';
 
-const WorkflowDashboard = () => {
+export function WorkflowDashboard() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('');
-  const [sortBy, setSortBy] = useState<string>('created');
-  const [currentPage, setCurrentPage] = useState(1);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newWorkflowName, setNewWorkflowName] = useState('');
   const [newWorkflowDesc, setNewWorkflowDesc] = useState('');
 
-  const { data: workflows, loading, error, refetch } = useWorkflows({
-    search,
-    status: statusFilter || undefined,
-    sortBy,
-    page: currentPage,
-  });
+  const { data: workflows, loading, error, refetch } = useWorkflows();
 
   const handleSearch = useCallback((value: string) => {
     setSearch(value);
-    setCurrentPage(1);
   }, []);
 
   const handleStatusFilter = useCallback((value: string) => {
     setStatusFilter(value);
-    setCurrentPage(1);
-  }, []);
-
-  const handleSort = useCallback((value: string) => {
-    setSortBy(value);
-    setCurrentPage(1);
   }, []);
 
   const handleCreateWorkflow = useCallback(async () => {
@@ -71,10 +58,19 @@ const WorkflowDashboard = () => {
     }
   }, [newWorkflowName, newWorkflowDesc, refetch, navigate]);
 
-  const workflowsData = useMemo(() => {
-    if (!workflows) return [];
-    return workflows.items || [];
-  }, [workflows]);
+  const filteredWorkflows = useMemo(() => {
+    let result = workflows;
+
+    if (search) {
+      result = result.filter((w) => w.name.toLowerCase().includes(search.toLowerCase()));
+    }
+
+    if (statusFilter) {
+      result = result.filter((w) => w.status === statusFilter);
+    }
+
+    return result;
+  }, [workflows, search, statusFilter]);
 
   if (error) {
     return (
@@ -105,29 +101,19 @@ const WorkflowDashboard = () => {
 
         {/* Filters */}
         <Card className="mb-6">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Input
               placeholder="Search workflows..."
               value={search}
-              onChange={(e) => handleSearch(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => handleSearch(e.target.value)}
             />
             <Select
               value={statusFilter}
-              onChange={(e) => handleStatusFilter(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLSelectElement>) => handleStatusFilter(e.target.value)}
               options={[
                 { value: '', label: 'All Status' },
                 { value: 'active', label: 'Active' },
-                { value: 'completed', label: 'Completed' },
-                { value: 'failed', label: 'Failed' },
-              ]}
-            />
-            <Select
-              value={sortBy}
-              onChange={(e) => handleSort(e.target.value)}
-              options={[
-                { value: 'created', label: 'Created Date' },
-                { value: 'name', label: 'Name' },
-                { value: 'last_execution', label: 'Last Execution' },
+                { value: 'inactive', label: 'Inactive' },
               ]}
             />
           </div>
@@ -138,7 +124,7 @@ const WorkflowDashboard = () => {
           <div className="flex justify-center py-12">
             <Spinner />
           </div>
-        ) : workflowsData.length === 0 ? (
+        ) : filteredWorkflows.length === 0 ? (
           <Card className="text-center py-12">
             <p className="text-gray-600">No workflows found</p>
             <Button variant="primary" onClick={() => setShowCreateModal(true)} className="mt-4">
@@ -146,28 +132,10 @@ const WorkflowDashboard = () => {
             </Button>
           </Card>
         ) : (
-          <>
-            <WorkflowList
-              workflows={workflowsData}
-              onWorkflowClick={(id) => navigate(`/workflows/${id}`)}
-            />
-
-            {/* Pagination */}
-            {workflows && workflows.total_pages > 1 && (
-              <div className="mt-6 flex justify-center gap-2">
-                {Array.from({ length: workflows.total_pages }, (_, i) => i + 1).map((page) => (
-                  <Button
-                    key={page}
-                    variant={currentPage === page ? 'primary' : 'secondary'}
-                    onClick={() => setCurrentPage(page)}
-                    className="min-w-10"
-                  >
-                    {page}
-                  </Button>
-                ))}
-              </div>
-            )}
-          </>
+          <WorkflowList
+            workflows={filteredWorkflows}
+            onWorkflowClick={(id) => navigate(`/workflows/${id}`)}
+          />
         )}
 
         {/* Create Modal */}
@@ -177,7 +145,7 @@ const WorkflowDashboard = () => {
               label="Workflow Name *"
               placeholder="Enter workflow name"
               value={newWorkflowName}
-              onChange={(e) => setNewWorkflowName(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setNewWorkflowName(e.target.value)}
             />
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
@@ -186,7 +154,7 @@ const WorkflowDashboard = () => {
                 placeholder="Enter workflow description"
                 rows={4}
                 value={newWorkflowDesc}
-                onChange={(e) => setNewWorkflowDesc(e.target.value)}
+                onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setNewWorkflowDesc(e.target.value)}
               />
             </div>
             <div className="flex gap-3 justify-end">
@@ -202,6 +170,4 @@ const WorkflowDashboard = () => {
       </div>
     </div>
   );
-};
-
-export default WorkflowDashboard;
+}

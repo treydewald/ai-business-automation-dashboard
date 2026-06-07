@@ -1,21 +1,19 @@
-import { Workflow } from '../types';
-import Card from './Card';
-import Badge from './Badge';
+import type { Workflow } from '@hooks/useWorkflows';
+import { Card } from './Card';
+import { Badge } from './Badge';
 
 interface WorkflowCardProps {
   workflow: Workflow;
   onClick: () => void;
 }
 
-const WorkflowCard = ({ workflow, onClick }: WorkflowCardProps) => {
+export function WorkflowCard({ workflow, onClick }: WorkflowCardProps) {
   const getStatusColor = (status?: string) => {
     switch (status) {
-      case 'completed':
+      case 'active':
         return 'success';
-      case 'failed':
-        return 'error';
-      case 'running':
-        return 'warning';
+      case 'inactive':
+        return 'default';
       default:
         return 'default';
     }
@@ -23,15 +21,13 @@ const WorkflowCard = ({ workflow, onClick }: WorkflowCardProps) => {
 
   const getStatusBadge = (status?: string) => {
     const emoji = {
-      completed: '✓',
-      failed: '✗',
-      running: '⏳',
+      active: '✓',
+      inactive: '—',
     };
     return emoji[status as keyof typeof emoji] || '—';
   };
 
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return 'Never';
+  const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString(undefined, {
       month: 'short',
       day: 'numeric',
@@ -57,28 +53,20 @@ const WorkflowCard = ({ workflow, onClick }: WorkflowCardProps) => {
         {/* Metadata */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-gray-500 uppercase">Last Execution</span>
-            {workflow.last_execution_status && (
-              <Badge variant={getStatusColor(workflow.last_execution_status)}>
-                {getStatusBadge(workflow.last_execution_status)} {workflow.last_execution_status}
-              </Badge>
-            )}
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500">Run Time</span>
-            <span className="text-xs font-medium text-gray-700">{formatDate(workflow.last_execution_time)}</span>
+            <span className="text-xs font-medium text-gray-500 uppercase">Status</span>
+            <Badge variant={getStatusColor(workflow.status)}>
+              {getStatusBadge(workflow.status)} {workflow.status}
+            </Badge>
           </div>
         </div>
 
         {/* Created */}
         <div className="border-t border-gray-200 pt-3">
           <p className="text-xs text-gray-500">
-            Created {new Date(workflow.created_at).toLocaleDateString()}
+            Created {formatDate(workflow.created_at)}
           </p>
         </div>
       </div>
     </Card>
   );
-};
-
-export default WorkflowCard;
+}

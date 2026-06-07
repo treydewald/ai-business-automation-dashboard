@@ -1,12 +1,12 @@
-import { Workflow } from '../types';
-import WorkflowCard from './WorkflowCard';
+import type { Workflow } from '@hooks/useWorkflows';
+import { WorkflowCard } from './WorkflowCard';
 
 interface WorkflowListProps {
   workflows: Workflow[];
   onWorkflowClick: (id: string) => void;
 }
 
-const WorkflowList = ({ workflows, onWorkflowClick }: WorkflowListProps) => {
+export function WorkflowList({ workflows, onWorkflowClick }: WorkflowListProps) {
   if (workflows.length === 0) {
     return <div className="text-center py-8 text-gray-500">No workflows to display</div>;
   }
@@ -22,6 +22,4 @@ const WorkflowList = ({ workflows, onWorkflowClick }: WorkflowListProps) => {
       ))}
     </div>
   );
-};
-
-export default WorkflowList;
+}

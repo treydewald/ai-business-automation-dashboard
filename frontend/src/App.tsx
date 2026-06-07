@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from '@contexts/ThemeContext';
 import { WorkflowEditorPage } from '@pages/WorkflowEditorPage';
-import WorkflowDashboard from '@pages/WorkflowDashboard';
+import { WorkflowDashboard } from '@pages/WorkflowDashboard';
 import './index.css';
 
 function App() {
