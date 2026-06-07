@@ -3,6 +3,7 @@ import { ThemeProvider } from '@contexts/ThemeContext';
 import { WorkflowEditorPage } from '@pages/WorkflowEditorPage';
 import { WorkflowDashboard } from '@pages/WorkflowDashboard';
 import { WorkflowDetailsPage } from '@pages/WorkflowDetailsPage';
+import { ExecutionDashboard } from '@pages/ExecutionDashboard';
 import './index.css';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
           <Route path="/workflows/new" element={<WorkflowEditorPage />} />
           <Route path="/workflows/:workflowId" element={<WorkflowDetailsPage />} />
           <Route path="/workflows/:workflowId/edit" element={<WorkflowEditorPage />} />
+          <Route path="/executions" element={<ExecutionDashboard />} />
         </Routes>
       </Router>
     </ThemeProvider>
