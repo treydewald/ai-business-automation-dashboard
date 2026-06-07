@@ -1,23 +1,396 @@
 # Implementation Plan: AI Business Automation Dashboard
 
-Executor-compatible feature specifications extracted from ROADMAP.md
+Executor-compatible feature specifications extracted from ROADMAP.md  
+**Worker Pool System: Enabled**  
 Generated: 2026-06-07
 
 ---
+
+## WORKER POOL SYSTEM
+
+```
+WORKER_POOL_SYSTEM:
+  version: 1.0
+  mode: group_based_execution
+  execution_model: "no global sequencing allowed"
+  ownership_model: "group exclusive ownership"
+  parallelization: "across groups only"
+  file_isolation: "strictly enforced per group"
+```
+
+**Design Principle:**
+Multiple agents work in parallel on independent feature groups. No agent may:
+- Select features globally or across groups
+- Modify files outside their assigned group
+- Execute without group ownership claim
+
+Groups claim all work within their boundary. Cross-group dependencies are **contracts only** (defined interfaces, no implementation sharing).
+
+---
+
+## FEATURE GROUPS
+
+### Group Foundation: Infrastructure & Setup
+**Status:** UNCLAIMED  
+**Owner:** null  
+**Isolation Level:** HIGH  
+**Allowed Operations:** Exclusive  
+**Dependency Groups:** None  
+
+**Features:** 01, 02, 03  
+**Description:** Project scaffolding, CI/CD automation, and code quality configuration.
+
+**Owned Files:**
+- `.github/workflows/`
+- `DEVELOPMENT.md`
+- `CONTRIBUTING.md`
+- `.eslintrc.json`, `.prettierrc`
+- `pyproject.toml`
+- `.pre-commit-config.yaml`
+- `.vscode/settings.json`
+
+---
+
+### Group Backend-Core: Execution Engine & APIs
+**Status:** UNCLAIMED  
+**Owner:** null  
+**Isolation Level:** MEDIUM  
+**Allowed Operations:** Exclusive  
+**Dependency Groups:** Foundation  
+
+**Features:** 04, 05, 06, 07, 08, 09  
+**Description:** Core backend models, workflow execution engine, REST APIs, trigger system, and logging.
+
+**Owned Files:**
+- `backend/app/models/`
+- `backend/app/api/routes/`
+- `backend/app/db/`
+- `backend/app/engine/`
+- `backend/app/services/trigger_service.py`
+- `backend/app/services/logging_service.py`
+- `backend/alembic/`
+- `backend/app/schemas/`
+- `backend/app/middleware/auth.py` (basic)
+
+**Contract Interfaces (Read-Only):**
+- Workflow execution result format
+- API request/response schemas
+- Log format specification
+
+---
+
+### Group Frontend-Core: UI Foundation & Dashboards
+**Status:** UNCLAIMED  
+**Owner:** null  
+**Isolation Level:** MEDIUM  
+**Allowed Operations:** Exclusive  
+**Dependency Groups:** Foundation  
+
+**Features:** 10, 11, 12, 13, 14, 15  
+**Description:** React setup, design system, UI components, and core dashboard pages.
+
+**Owned Files:**
+- `src/pages/` (Dashboard, Details, Execution)
+- `src/components/` (UI primitives, Layout, Cards)
+- `src/styles/`
+- `src/hooks/useWorkflows.ts`
+- `src/hooks/useWorkflow.ts`
+- `src/hooks/useExecutions.ts`
+- `src/hooks/useExecution.ts`
+- `src/hooks/useLogs.ts`
+- `tailwind.config.js`
+- `tsconfig.json`
+- `src/contexts/` (basic)
+
+**Contract Interfaces (Read-Only):**
+- API hook return types
+- UI component props
+
+---
+
+### Group Testing-Deploy: Quality & Containerization
+**Status:** UNCLAIMED  
+**Owner:** null  
+**Isolation Level:** HIGH  
+**Allowed Operations:** Exclusive  
+**Dependency Groups:** Backend-Core, Frontend-Core  
+
+**Features:** 17, 18, 19  
+**Description:** Test suites, coverage reporting, and Docker containerization.
+
+**Owned Files:**
+- `backend/tests/`
+- `frontend/src/__tests__/`
+- `frontend/jest.config.js`
+- `Dockerfile` (backend)
+- `Dockerfile` (frontend)
+- `docker-compose.yml`
+- `.dockerignore`
+- `backend/pytest.ini`
+
+**Contract Interfaces (Read-Only):**
+- Test data formats
+- Docker image names/tags
+
+---
+
+### Group Editor-Classification: Advanced Workflow Features
+**Status:** UNCLAIMED  
+**Owner:** null  
+**Isolation Level:** MEDIUM  
+**Allowed Operations:** Exclusive  
+**Dependency Groups:** Backend-Core, Frontend-Core  
+
+**Features:** 20, 21, 22  
+**Description:** Visual workflow editor, classification service, and schedule-based triggers.
+
+**Owned Files:**
+- `src/pages/WorkflowEditorPage.tsx`
+- `src/components/WorkflowCanvas.tsx`
+- `src/components/StepNode.tsx`
+- `src/components/StepConfigPanel.tsx`
+- `src/components/ConditionalBuilder.tsx`
+- `src/utils/dagValidation.ts`
+- `src/hooks/useWorkflowEditor.ts`
+- `backend/app/services/classification_service.py`
+- `backend/app/api/routes/classification.py`
+- `backend/app/models/classifier.py`
+- `backend/app/rules/`
+- `backend/app/schemas/classification.py`
+- `backend/app/services/scheduler_service.py`
+- `backend/app/api/routes/schedules.py`
+- `backend/app/jobs/scheduled_executor.py`
+- `backend/app/models/schedule.py`
+- `backend/app/schemas/schedule.py`
+
+**Contract Interfaces (Read-Only):**
+- Workflow DAG format
+- Classification result schema
+- Schedule execution event format
+
+---
+
+### Group Integration-System: Integration Framework & Providers
+**Status:** UNCLAIMED  
+**Owner:** null  
+**Isolation Level:** MEDIUM  
+**Allowed Operations:** Exclusive  
+**Dependency Groups:** Backend-Core  
+
+**Features:** 23, 24, 25, 26, 27  
+**Description:** Extensible integration provider system and concrete integrations (Slack, Email, Webhook, HubSpot).
+
+**Owned Files:**
+- `backend/app/models/integration.py`
+- `backend/app/services/integration_base.py`
+- `backend/app/integrations/slack.py`
+- `backend/app/integrations/email.py`
+- `backend/app/integrations/webhook.py`
+- `backend/app/integrations/hubspot.py`
+- `backend/app/api/routes/integrations.py`
+- `backend/app/services/encryption.py`
+- `backend/app/schemas/integration.py`
+
+**Contract Interfaces (Read-Only):**
+- IntegrationProvider base class interface
+- Integration execution step format
+
+---
+
+### Group Analytics-Security: Analytics, Auth & Enterprise Features
+**Status:** UNCLAIMED  
+**Owner:** null  
+**Isolation Level:** MEDIUM  
+**Allowed Operations:** Exclusive  
+**Dependency Groups:** Backend-Core, Frontend-Core  
+
+**Features:** 28, 29, 34, 35, 36, 37  
+**Description:** Analytics dashboard, user authentication, multi-tenancy, RBAC, audit logging, and API documentation.
+
+**Owned Files:**
+- `src/pages/AnalyticsDashboard.tsx`
+- `src/components/MetricsCard.tsx`
+- `src/components/TrendChart.tsx`
+- `src/services/analyticsApi.ts`
+- `src/pages/LoginPage.tsx`
+- `src/contexts/AuthContext.tsx`
+- `src/hooks/useAuth.ts`
+- `src/components/PermissionGate.tsx`
+- `backend/app/services/analytics_service.py`
+- `backend/app/api/routes/analytics.py`
+- `backend/app/api/routes/auth.py`
+- `backend/app/services/auth_service.py`
+- `backend/app/schemas/user.py`
+- `backend/app/models/user.py`
+- `backend/app/models/tenant.py`
+- `backend/app/models/role.py`
+- `backend/app/models/permission.py`
+- `backend/app/models/audit_log.py`
+- `backend/app/middleware/rbac.py`
+- `backend/app/middleware/tenant.py`
+- `backend/app/middleware/audit.py`
+- `backend/app/services/versioning_service.py` (docs aspect)
+
+**Contract Interfaces (Read-Only):**
+- Authentication token format
+- User context in requests
+- Permission model
+- Analytics metric schemas
+
+---
+
+### Group Performance: Optimization & Versioning
+**Status:** UNCLAIMED  
+**Owner:** null  
+**Isolation Level:** HIGH  
+**Allowed Operations:** Exclusive  
+**Dependency Groups:** Backend-Core, Frontend-Core  
+
+**Features:** 30, 31, 32, 33  
+**Description:** Workflow versioning, database optimization, caching, and frontend performance improvements.
+
+**Owned Files:**
+- `backend/app/models/workflow_version.py`
+- `backend/app/api/routes/workflow_versions.py`
+- `backend/app/db/optimization.py`
+- `backend/app/cache/`
+- `backend/app/middleware/caching.py`
+- `src/components/VersionHistory.tsx`
+- `src/components/VersionDiff.tsx`
+- `webpack.config.js` (or Vite config)
+- `frontend/jest.config.js` (coverage config)
+
+**Contract Interfaces (Read-Only):**
+- Workflow version format
+- Cache invalidation events
+
+---
+
+### Group Future-Enterprise: Advanced & Optional Features
+**Status:** UNCLAIMED  
+**Owner:** null  
+**Isolation Level:** LOW  
+**Allowed Operations:** Exclusive  
+**Dependency Groups:** Analytics-Security, Backend-Core, Frontend-Core  
+
+**Features:** 38, 39, 40, 41, 42, 43  
+**Description:** Templates marketplace, advanced monitoring, mobile app, self-hosted deployment, collaborative editing, and custom integration builder.
+
+**Owned Files:**
+- `backend/app/models/template.py`
+- `backend/app/api/routes/templates.py`
+- `src/pages/TemplateLibrary.tsx`
+- `src/components/TemplateCard.tsx`
+- `backend/app/services/alerting_service.py`
+- `backend/app/api/routes/alerts.py`
+- `backend/app/models/alert.py`
+- `src/pages/AlertsPage.tsx`
+- `mobile-app/` (new directory)
+- `kubernetes/`
+- `helm-chart/`
+- `src/components/WorkflowEditorCollab.tsx`
+- `backend/app/services/collab_sync.py`
+- `backend/app/services/custom_integration.py`
+- `src/pages/CustomIntegrationBuilder.tsx`
+
+**Contract Interfaces (Read-Only):**
+- None (depends on all others)
+
+---
+
+## WORKER POOL RULES
+
+1. **Group Ownership is Exclusive**
+   - Only one agent may claim a group at a time
+   - Claiming a group grants exclusive file write access to that group's owned files
+   - No agent may modify files outside their claimed group
+
+2. **Feature Selection**
+   - Agents MUST claim a group before selecting features
+   - Features MUST NOT be selected globally
+   - Features are claimable ONLY within group context
+
+3. **Parallel Execution**
+   - Multiple groups may execute in parallel
+   - Within a group, features are executed sequentially (respecting internal dependencies)
+   - Cross-group execution is NOT allowed
+
+4. **File Boundaries**
+   - File ownership map is the single source of truth for write permissions
+   - Read-only access to contract interfaces is allowed across groups
+   - Any file modification outside owned boundary is a violation
+
+5. **Cross-Group Dependencies**
+   - Dependencies between groups MUST be handled via contracts (defined interfaces)
+   - No shared implementation
+   - No direct file sharing
+   - Group A may depend on output of Group B, but only through defined contracts
+
+6. **Dependency Resolution**
+   - Internal dependencies (within group): resolve sequentially within group
+   - External dependencies (to other groups): block on group claim + completion status
+   - If group X depends on group Y: agent cannot claim X until Y is completed
+
+7. **State Isolation**
+   - Each group maintains isolated state
+   - Agents log group claims and feature completions to WORKER_STATE
+   - No cross-group state mutations
+
+---
+
+## WORKER STATE
+
+```
+WORKER_STATE:
+  active_workers: []
+  group_claim_log: []
+  group_status:
+    Foundation: NOT_STARTED
+    Backend-Core: NOT_STARTED
+    Frontend-Core: NOT_STARTED
+    Testing-Deploy: NOT_STARTED
+    Editor-Classification: NOT_STARTED
+    Integration-System: NOT_STARTED
+    Analytics-Security: NOT_STARTED
+    Performance: NOT_STARTED
+    Future-Enterprise: NOT_STARTED
+```
+
+**Claim Log Format:**
+```
+{
+  timestamp: ISO-8601,
+  worker_id: string,
+  group: string,
+  action: "CLAIM" | "RELEASE" | "COMPLETE",
+  features_completed: [Feature IDs],
+  notes: string
+}
+```
+
+---
+
+---
+
+## FEATURE SPECIFICATIONS
 
 ## Feature 01: GitHub Actions CI/CD Setup
 
 **Tier**
 Tier 1
 
-**Execution Metadata (REQUIRED FOR EXECUTOR COMPATIBILITY)**
+**Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Foundation
+execution_scope:
+  group: Foundation
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
-depends_on: []
+depends_on: [Feature 17, Feature 18, Feature 19]
 group_candidate: true
 isolation_level: high
 ```
@@ -90,7 +463,11 @@ Tier 1
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Foundation
+execution_scope:
+  group: Foundation
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -161,7 +538,11 @@ Tier 1
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Foundation
+execution_scope:
+  group: Foundation
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -234,7 +615,11 @@ Tier 1
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Backend-Core
+execution_scope:
+  group: Backend-Core
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -312,7 +697,11 @@ Tier 1
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Backend-Core
+execution_scope:
+  group: Backend-Core
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -388,7 +777,11 @@ Tier 1
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Backend-Core
+execution_scope:
+  group: Backend-Core
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -473,7 +866,11 @@ Tier 1
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Backend-Core
+execution_scope:
+  group: Backend-Core
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -550,7 +947,11 @@ Tier 1
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Backend-Core
+execution_scope:
+  group: Backend-Core
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -629,7 +1030,11 @@ Tier 1
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Backend-Core
+execution_scope:
+  group: Backend-Core
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -701,7 +1106,11 @@ Tier 1
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Frontend-Core
+execution_scope:
+  group: Frontend-Core
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -782,7 +1191,11 @@ Tier 1
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Frontend-Core
+execution_scope:
+  group: Frontend-Core
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -864,7 +1277,11 @@ Tier 1
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Frontend-Core
+execution_scope:
+  group: Frontend-Core
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -943,7 +1360,11 @@ Tier 1
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Frontend-Core
+execution_scope:
+  group: Frontend-Core
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -1022,7 +1443,11 @@ Tier 1
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Frontend-Core
+execution_scope:
+  group: Frontend-Core
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -1099,7 +1524,11 @@ Tier 1
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Frontend-Core
+execution_scope:
+  group: Frontend-Core
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -1182,7 +1611,11 @@ Tier 1
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Frontend-Core
+execution_scope:
+  group: Frontend-Core
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -1264,7 +1697,11 @@ Tier 1
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Testing-Deploy
+execution_scope:
+  group: Testing-Deploy
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -1346,7 +1783,11 @@ Tier 1
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Testing-Deploy
+execution_scope:
+  group: Testing-Deploy
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -1425,7 +1866,11 @@ Tier 1
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Testing-Deploy
+execution_scope:
+  group: Testing-Deploy
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -1502,7 +1947,11 @@ Tier 2
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Editor-Classification
+execution_scope:
+  group: Editor-Classification
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -1587,7 +2036,11 @@ Tier 2
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Editor-Classification
+execution_scope:
+  group: Editor-Classification
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -1665,7 +2118,11 @@ Tier 2
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Editor-Classification
+execution_scope:
+  group: Editor-Classification
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -1744,7 +2201,11 @@ Tier 2
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Integration-System
+execution_scope:
+  group: Integration-System
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -1824,7 +2285,11 @@ Tier 2
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Integration-System
+execution_scope:
+  group: Integration-System
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -1900,7 +2365,11 @@ Tier 2
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Integration-System
+execution_scope:
+  group: Integration-System
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -1976,7 +2445,11 @@ Tier 2
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Integration-System
+execution_scope:
+  group: Integration-System
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -2057,7 +2530,11 @@ Tier 2
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Integration-System
+execution_scope:
+  group: Integration-System
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -2135,7 +2612,11 @@ Tier 2
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Analytics-Security
+execution_scope:
+  group: Analytics-Security
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -2216,7 +2697,11 @@ Tier 2
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Analytics-Security
+execution_scope:
+  group: Analytics-Security
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -2269,7 +2754,7 @@ Edge Cases
 - `backend/app/api/routes/auth.py`
 - `backend/app/services/auth_service.py`
 - `backend/app/schemas/user.py`
-- `backend/app/middleware/auth.py`
+- `backend/app/middleware/auth.py` (basic)
 - `src/pages/LoginPage.tsx`
 - `src/contexts/AuthContext.tsx`
 - `src/hooks/useAuth.ts`
@@ -2303,7 +2788,11 @@ Tier 2
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Performance
+execution_scope:
+  group: Performance
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -2377,7 +2866,11 @@ Tier 2
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Performance
+execution_scope:
+  group: Performance
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -2453,7 +2946,11 @@ Tier 2
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Performance
+execution_scope:
+  group: Performance
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -2529,7 +3026,11 @@ Tier 2
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Performance
+execution_scope:
+  group: Performance
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -2603,7 +3104,11 @@ Tier 3
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Analytics-Security
+execution_scope:
+  group: Analytics-Security
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -2674,7 +3179,11 @@ Tier 3
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Analytics-Security
+execution_scope:
+  group: Analytics-Security
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -2746,7 +3255,11 @@ Tier 3
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Analytics-Security
+execution_scope:
+  group: Analytics-Security
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -2817,7 +3330,11 @@ Tier 3
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Analytics-Security
+execution_scope:
+  group: Analytics-Security
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -2889,7 +3406,11 @@ Tier 3
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Future-Enterprise
+execution_scope:
+  group: Future-Enterprise
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -2959,7 +3480,11 @@ Tier 3
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Future-Enterprise
+execution_scope:
+  group: Future-Enterprise
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -3031,7 +3556,11 @@ Tier 3
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Future-Enterprise
+execution_scope:
+  group: Future-Enterprise
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -3101,7 +3630,11 @@ Tier 3
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Future-Enterprise
+execution_scope:
+  group: Future-Enterprise
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -3174,7 +3707,11 @@ Tier 3
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Future-Enterprise
+execution_scope:
+  group: Future-Enterprise
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -3245,7 +3782,11 @@ Tier 3
 **Execution Metadata**
 ```
 status: NOT STARTED
-group: UNASSIGNED
+group: Future-Enterprise
+execution_scope:
+  group: Future-Enterprise
+  owned_by: null
+  file_boundary: strictly_enforced
 locked: false
 assigned_worker: null
 is_blocked: false
@@ -3307,45 +3848,191 @@ External Dependencies
 
 ---
 
-## Dependency Graph Summary
+## FILE OWNERSHIP MAP
 
-**Critical Path (Tier 1 -> Execution Ready):**
-Feature 04 → Features 05, 06, 07, 08, 09 → Features 12-19
+```
+FILE_OWNERSHIP_MAP:
 
-**Blocked Dependencies:**
-- Features 05, 06, 07, 08, 09 all depend on Feature 04
-- Features 12-15 depend on Features 11, 16
-- Feature 16 depends on Features 05, 09
-- Feature 17, 18 depend on multiple Phase 1 features
-- Features 24-27 depend on Feature 23
-- Features 30-37 depend on Feature 29
+# Foundation Group
+.github/: Foundation
+DEVELOPMENT.md: Foundation
+CONTRIBUTING.md: Foundation
+.eslintrc.json: Foundation
+.prettierrc: Foundation
+pyproject.toml: Foundation
+.pre-commit-config.yaml: Foundation
+.vscode/settings.json: Foundation
 
-**Parallel Execution Opportunities (group_candidate: true):**
-- Features 01, 02, 03 (can run in parallel)
-- Feature 10 (independent)
-- Features 04, 10 (can run in parallel)
-- Features 37, 41 (documentation/deployment, independent)
+# Backend-Core Group
+backend/app/models/: Backend-Core
+backend/app/api/routes/workflows.py: Backend-Core
+backend/app/api/routes/health.py: Backend-Core
+backend/app/api/routes/executions.py: Backend-Core
+backend/app/api/routes/triggers.py: Backend-Core
+backend/app/api/routes/logs.py: Backend-Core
+backend/app/db/: Backend-Core
+backend/app/engine/: Backend-Core
+backend/app/services/trigger_service.py: Backend-Core
+backend/app/services/logging_service.py: Backend-Core
+backend/app/schemas/: Backend-Core
+backend/app/middleware/auth.py: Backend-Core
+backend/alembic/: Backend-Core
+
+# Frontend-Core Group
+src/pages/WorkflowDashboard.tsx: Frontend-Core
+src/pages/WorkflowDetailsPage.tsx: Frontend-Core
+src/pages/ExecutionDashboard.tsx: Frontend-Core
+src/components/Button.tsx: Frontend-Core
+src/components/Card.tsx: Frontend-Core
+src/components/Modal.tsx: Frontend-Core
+src/components/Form/: Frontend-Core
+src/components/Badge.tsx: Frontend-Core
+src/components/Alert.tsx: Frontend-Core
+src/components/Spinner.tsx: Frontend-Core
+src/components/EmptyState.tsx: Frontend-Core
+src/components/Table.tsx: Frontend-Core
+src/components/WorkflowList.tsx: Frontend-Core
+src/components/WorkflowCard.tsx: Frontend-Core
+src/components/ExecutionList.tsx: Frontend-Core
+src/components/ExecutionRow.tsx: Frontend-Core
+src/components/Layout/: Frontend-Core
+src/styles/: Frontend-Core
+src/hooks/useWorkflows.ts: Frontend-Core
+src/hooks/useWorkflow.ts: Frontend-Core
+src/hooks/useExecutions.ts: Frontend-Core
+src/hooks/useExecution.ts: Frontend-Core
+src/hooks/useLogs.ts: Frontend-Core
+src/contexts/: Frontend-Core
+tailwind.config.js: Frontend-Core
+tsconfig.json: Frontend-Core
+
+# Testing-Deploy Group
+backend/tests/: Testing-Deploy
+frontend/src/__tests__/: Testing-Deploy
+frontend/jest.config.js: Testing-Deploy
+Dockerfile.backend: Testing-Deploy
+Dockerfile.frontend: Testing-Deploy
+docker-compose.yml: Testing-Deploy
+.dockerignore: Testing-Deploy
+backend/pytest.ini: Testing-Deploy
+
+# Editor-Classification Group
+src/pages/WorkflowEditorPage.tsx: Editor-Classification
+src/components/WorkflowCanvas.tsx: Editor-Classification
+src/components/StepNode.tsx: Editor-Classification
+src/components/StepConfigPanel.tsx: Editor-Classification
+src/components/ConditionalBuilder.tsx: Editor-Classification
+src/utils/dagValidation.ts: Editor-Classification
+src/hooks/useWorkflowEditor.ts: Editor-Classification
+backend/app/services/classification_service.py: Editor-Classification
+backend/app/api/routes/classification.py: Editor-Classification
+backend/app/models/classifier.py: Editor-Classification
+backend/app/rules/: Editor-Classification
+backend/app/schemas/classification.py: Editor-Classification
+backend/app/services/scheduler_service.py: Editor-Classification
+backend/app/api/routes/schedules.py: Editor-Classification
+backend/app/jobs/: Editor-Classification
+backend/app/models/schedule.py: Editor-Classification
+backend/app/schemas/schedule.py: Editor-Classification
+
+# Integration-System Group
+backend/app/models/integration.py: Integration-System
+backend/app/services/integration_base.py: Integration-System
+backend/app/integrations/: Integration-System
+backend/app/api/routes/integrations.py: Integration-System
+backend/app/services/encryption.py: Integration-System
+backend/app/schemas/integration.py: Integration-System
+
+# Analytics-Security Group
+src/pages/AnalyticsDashboard.tsx: Analytics-Security
+src/pages/LoginPage.tsx: Analytics-Security
+src/pages/AuditLogPage.tsx: Analytics-Security
+src/components/MetricsCard.tsx: Analytics-Security
+src/components/TrendChart.tsx: Analytics-Security
+src/components/PermissionGate.tsx: Analytics-Security
+src/services/analyticsApi.ts: Analytics-Security
+src/contexts/AuthContext.tsx: Analytics-Security
+src/hooks/useAuth.ts: Analytics-Security
+backend/app/api/routes/analytics.py: Analytics-Security
+backend/app/api/routes/auth.py: Analytics-Security
+backend/app/api/routes/audit.py: Analytics-Security
+backend/app/services/analytics_service.py: Analytics-Security
+backend/app/services/auth_service.py: Analytics-Security
+backend/app/models/user.py: Analytics-Security
+backend/app/models/tenant.py: Analytics-Security
+backend/app/models/role.py: Analytics-Security
+backend/app/models/permission.py: Analytics-Security
+backend/app/models/audit_log.py: Analytics-Security
+backend/app/middleware/rbac.py: Analytics-Security
+backend/app/middleware/tenant.py: Analytics-Security
+backend/app/middleware/audit.py: Analytics-Security
+backend/app/schemas/user.py: Analytics-Security
+
+# Performance Group
+backend/app/models/workflow_version.py: Performance
+backend/app/api/routes/workflow_versions.py: Performance
+backend/app/db/optimization.py: Performance
+backend/app/cache/: Performance
+backend/app/middleware/caching.py: Performance
+src/components/VersionHistory.tsx: Performance
+src/components/VersionDiff.tsx: Performance
+webpack.config.js: Performance
+
+# Future-Enterprise Group
+backend/app/models/template.py: Future-Enterprise
+backend/app/api/routes/templates.py: Future-Enterprise
+src/pages/TemplateLibrary.tsx: Future-Enterprise
+src/components/TemplateCard.tsx: Future-Enterprise
+backend/app/models/alert.py: Future-Enterprise
+backend/app/services/alerting_service.py: Future-Enterprise
+backend/app/api/routes/alerts.py: Future-Enterprise
+src/pages/AlertsPage.tsx: Future-Enterprise
+mobile-app/: Future-Enterprise
+kubernetes/: Future-Enterprise
+helm-chart/: Future-Enterprise
+src/components/WorkflowEditorCollab.tsx: Future-Enterprise
+backend/app/services/collab_sync.py: Future-Enterprise
+src/pages/CustomIntegrationBuilder.tsx: Future-Enterprise
+backend/app/services/custom_integration.py: Future-Enterprise
+```
 
 ---
 
-## Execution Timeline Estimate
+## EXECUTION CONSTRAINTS FOR WORKER POOL
 
-**Tier 1 (MVP) - 6 Weeks**
-- Week 1: Features 01-03, 10
-- Week 2: Feature 04 (models/DB)
-- Week 3: Features 05-09 (backend)
-- Week 4: Features 11-16 (frontend)
-- Week 5: Features 17-18 (testing)
-- Week 6: Feature 19 (Docker)
+**Group Execution Order (no strict sequencing, but respects dependencies):**
+1. **Foundation** → None (can start anytime)
+2. **Backend-Core** → Depends: Foundation
+3. **Frontend-Core** → Depends: Foundation
+4. **Testing-Deploy** → Depends: Backend-Core, Frontend-Core
+5. **Editor-Classification** → Depends: Backend-Core, Frontend-Core
+6. **Integration-System** → Depends: Backend-Core
+7. **Analytics-Security** → Depends: Backend-Core, Frontend-Core
+8. **Performance** → Depends: Backend-Core, Frontend-Core
+9. **Future-Enterprise** → Depends: All prior groups (loose)
 
-**Tier 2 (Core Features) - 4 Weeks**
-- Week 7-8: Features 20-23 (editor, classification, triggers, integrations)
-- Week 9: Features 24-29 (integrations, analytics, auth)
-- Week 10: Features 30-37 (advanced features, optimization)
+**Parallel Execution Safe:**
+- Foundation + Backend-Core (independent)
+- Foundation + Frontend-Core (independent)
+- Backend-Core + Frontend-Core (independent)
+- Testing-Deploy (requires both, but after)
+- Editor-Classification + Integration-System (both depend on Backend-Core)
+- Analytics-Security (depends on Backend-Core + Frontend-Core)
 
-**Tier 3 (Future) - On Demand**
-- Features 38-43 (marketplace, mobile, self-host, collaboration)
+**Cross-Group Contract Interfaces (READ-ONLY):**
+- Backend-Core → Workflow DAG format, API schemas
+- Frontend-Core → API hook return types, UI component props
+- Integration-System → IntegrationProvider base class
+- Analytics-Security → Authentication token format, User context
+- Performance → Workflow version format, Cache invalidation events
+
+**Violation Rules:**
+- ❌ Modifying files outside assigned group
+- ❌ Selecting features without group claim
+- ❌ Accessing private implementation of other groups
+- ❌ Direct state mutations across groups
+- ❌ Concurrent claims of same group
 
 ---
 
-End of Implementation Plan
+End of Worker Pool Implementation Plan
