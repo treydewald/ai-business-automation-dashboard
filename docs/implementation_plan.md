@@ -776,14 +776,14 @@ Tier 1
 
 **Execution Metadata**
 ```
-status: NOT STARTED
+status: COMPLETED
 group: Backend-Core
 execution_scope:
   group: Backend-Core
-  owned_by: null
+  owned_by: Worker-haiku-20260607-002
   file_boundary: strictly_enforced
 locked: false
-assigned_worker: null
+assigned_worker: Worker-haiku-20260607-002
 is_blocked: false
 depends_on: [Feature 04]
 group_candidate: false
@@ -1105,14 +1105,14 @@ Tier 1
 
 **Execution Metadata**
 ```
-status: NOT STARTED
+status: COMPLETED
 group: Frontend-Core
 execution_scope:
   group: Frontend-Core
-  owned_by: null
+  owned_by: Worker-haiku-20260607-002
   file_boundary: strictly_enforced
 locked: false
-assigned_worker: null
+assigned_worker: Worker-haiku-20260607-002
 is_blocked: false
 depends_on: []
 group_candidate: true
