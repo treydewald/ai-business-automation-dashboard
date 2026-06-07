@@ -1,21 +1,13 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { getInitialTheme, applyTheme, type Theme } from '@utils/theme';
-
-interface ThemeContextType {
-  theme: Theme;
-  toggleTheme: () => void;
-}
-
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+import { ThemeContext } from './theme.context';
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     applyTheme(theme);
-    setMounted(true);
   }, [theme]);
 
   const toggleTheme = () => {
@@ -23,19 +15,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setTheme(newTheme);
   };
 
-  if (!mounted) return <>{children}</>;
-
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );
-}
-
-export function useTheme() {
-  const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error('useTheme must be used within ThemeProvider');
-  }
-  return context;
 }
