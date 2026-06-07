@@ -43,6 +43,6 @@ export default defineConfig({
     sourcemap: process.env.NODE_ENV === 'development',
   },
   server: {
-    middlewareMode: true,
+    port: 4173,
   },
 })
