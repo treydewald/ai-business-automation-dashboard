@@ -261,3 +261,97 @@ class TestIntegrationAPI:
         data = response.json()
         assert "success" in data
         assert "message" in data
+
+
+class TestSlackIntegration:
+    def test_slack_provider_initialization(self):
+        from app.integrations.slack import SlackIntegration
+
+        creds = {"webhook_url": "https://hooks.slack.com/services/xxx"}
+        slack = SlackIntegration(creds)
+        assert slack.integration_type == "slack"
+
+    def test_slack_send_message(self):
+        from app.integrations.slack import SlackIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {"webhook_url": "https://hooks.slack.com/services/xxx"}
+        slack = SlackIntegration(creds, {"timeout": 5})
+
+        with patch("requests.post") as mock_post:
+            mock_response = MagicMock()
+            mock_response.status_code = 200
+            mock_response.json.return_value = {"ts": "1234567890.123456"}
+            mock_post.return_value = mock_response
+
+            result = slack.send_message("Test message", "#channel")
+            assert result["success"] is True
+            assert "message_id" in result
+
+    def test_slack_send_blocks(self):
+        from app.integrations.slack import SlackIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {"webhook_url": "https://hooks.slack.com/services/xxx"}
+        slack = SlackIntegration(creds)
+
+        blocks = [
+            {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": "Workflow execution complete"},
+            }
+        ]
+
+        with patch("requests.post") as mock_post:
+            mock_response = MagicMock()
+            mock_response.status_code = 200
+            mock_response.json.return_value = {"ts": "1234567890.123456"}
+            mock_post.return_value = mock_response
+
+            result = slack.send_blocks(blocks)
+            assert result["success"] is True
+
+    def test_slack_rate_limit_handling(self):
+        from app.integrations.slack import SlackIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {"webhook_url": "https://hooks.slack.com/services/xxx"}
+        slack = SlackIntegration(creds)
+
+        with patch("requests.post") as mock_post:
+            mock_response = MagicMock()
+            mock_response.status_code = 429
+            mock_response.headers = {"Retry-After": "5"}
+            mock_post.return_value = mock_response
+
+            with patch("time.sleep"):
+                try:
+                    slack.send_message("Test")
+                except RuntimeError as e:
+                    assert "rate limited" in str(e).lower()
+
+    def test_slack_webhook_signature_verification(self):
+        from app.integrations.slack import SlackIntegration
+
+        body = "test_body"
+        signing_secret = "test_secret"
+
+        sig_to_verify = "v0=test_sig"
+        result = SlackIntegration.verify_webhook_signature(body, sig_to_verify, signing_secret)
+        assert result is False
+
+    def test_slack_execute_action(self):
+        from app.integrations.slack import SlackIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {"webhook_url": "https://hooks.slack.com/services/xxx"}
+        slack = SlackIntegration(creds)
+
+        with patch("requests.post") as mock_post:
+            mock_response = MagicMock()
+            mock_response.status_code = 200
+            mock_response.json.return_value = {"ts": "123"}
+            mock_post.return_value = mock_response
+
+            result = slack.execute("send_message", text="Hello", channel="#general")
+            assert result["success"] is True
