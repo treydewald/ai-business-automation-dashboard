@@ -4,6 +4,7 @@ import { useWorkflow } from '@hooks/useWorkflow';
 import { WorkflowMetadata } from '@components/WorkflowMetadata';
 import { WorkflowDefinition } from '@components/WorkflowDefinition';
 import { ExecutionList } from '@components/ExecutionList';
+import { VersionHistory } from '@components/VersionHistory';
 import { Button } from '@components/Button';
 import { Card } from '@components/Card';
 import { Spinner } from '@components/Spinner';
@@ -133,9 +134,15 @@ export function WorkflowDetailsPage() {
         </Card>
 
         {/* Recent Executions */}
-        <Card>
+        <Card className="mb-6">
           <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Executions</h2>
           <ExecutionList workflowId={workflowId} />
+        </Card>
+
+        {/* Version History */}
+        <Card>
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Version History</h2>
+          <VersionHistory workflowId={workflowId} />
         </Card>
 
         {/* Delete Confirmation Modal */}
