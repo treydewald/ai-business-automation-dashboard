@@ -240,8 +240,8 @@ Groups claim all work within their boundary. Cross-group dependencies are **cont
 ---
 
 ### Group Performance: Optimization & Versioning
-**Status:** UNCLAIMED  
-**Owner:** null  
+**Status:** IN_PROGRESS  
+**Owner:** Worker-haiku-20260607-pool-001  
 **Isolation Level:** HIGH  
 **Allowed Operations:** Exclusive  
 **Dependency Groups:** Backend-Core, Frontend-Core  
