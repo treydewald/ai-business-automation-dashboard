@@ -101,3 +101,43 @@ def cached(ttl_seconds: int = 300):
 def get_cache_manager() -> CacheManager:
     """Get global cache manager instance."""
     return _cache_manager
+
+
+class CacheWarmer:
+    """Preload cache with frequently accessed data."""
+
+    @staticmethod
+    def warm_workflow_cache(session) -> int:
+        """Warm cache with recent workflows."""
+        from app.models import Workflow
+        from sqlalchemy import desc
+
+        cache_manager = get_cache_manager()
+        workflows = session.query(Workflow).filter(
+            Workflow.deleted_at == None
+        ).order_by(desc(Workflow.created_at)).limit(50).all()
+
+        for workflow in workflows:
+            cache_key = CacheManager.generate_cache_key("workflow", workflow.id)
+            cache_manager.set(cache_key, workflow, ttl_seconds=600)
+
+        logger.info(f"Warmed cache with {len(workflows)} workflows")
+        return len(workflows)
+
+    @staticmethod
+    def warm_execution_cache(session) -> int:
+        """Warm cache with recent executions."""
+        from app.models.execution import Execution
+        from sqlalchemy import desc
+
+        cache_manager = get_cache_manager()
+        executions = session.query(Execution).order_by(
+            desc(Execution.created_at)
+        ).limit(100).all()
+
+        for execution in executions:
+            cache_key = CacheManager.generate_cache_key("execution", execution.id)
+            cache_manager.set(cache_key, execution, ttl_seconds=300)
+
+        logger.info(f"Warmed cache with {len(executions)} executions")
+        return len(executions)
