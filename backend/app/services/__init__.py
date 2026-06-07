@@ -3,6 +3,7 @@
 from .classification_service import ClassificationService, get_classification_service
 from .scheduler_service import SchedulerService, get_scheduler_service
 from .trigger_service import TriggerService
+from .logging_service import LoggingService
 
 __all__ = [
     "ClassificationService",
@@ -10,4 +11,5 @@ __all__ = [
     "SchedulerService",
     "get_scheduler_service",
     "TriggerService",
+    "LoggingService",
 ]
