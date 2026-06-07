@@ -31,8 +31,8 @@ Groups claim all work within their boundary. Cross-group dependencies are **cont
 ## FEATURE GROUPS
 
 ### Group Foundation: Infrastructure & Setup
-**Status:** UNCLAIMED  
-**Owner:** null  
+**Status:** IN_PROGRESS  
+**Owner:** Worker-haiku-20260607-001  
 **Isolation Level:** HIGH  
 **Allowed Operations:** Exclusive  
 **Dependency Groups:** None  
