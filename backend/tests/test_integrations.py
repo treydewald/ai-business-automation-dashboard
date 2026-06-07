@@ -441,3 +441,207 @@ class TestEmailIntegration:
                 body="Test message",
             )
             assert result["success"] is True
+
+
+class TestWebhookIntegration:
+    def test_webhook_provider_initialization(self):
+        from app.integrations.webhook import WebhookIntegration
+
+        creds = {"url": "https://api.example.com/webhook"}
+        webhook = WebhookIntegration(creds)
+        assert webhook.integration_type == "webhook"
+
+    def test_webhook_test_connection(self):
+        from app.integrations.webhook import WebhookIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {"url": "https://api.example.com/webhook"}
+        webhook = WebhookIntegration(creds)
+
+        with patch("requests.request") as mock_request:
+            mock_response = MagicMock()
+            mock_response.status_code = 200
+            mock_request.return_value = mock_response
+
+            result = webhook.test_connection()
+            assert result is True
+
+    def test_webhook_post_request(self):
+        from app.integrations.webhook import WebhookIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {"url": "https://api.example.com/webhook"}
+        webhook = WebhookIntegration(creds)
+
+        with patch("requests.request") as mock_request:
+            mock_response = MagicMock()
+            mock_response.status_code = 200
+            mock_response.text = '{"success": true}'
+            mock_response.headers = {"content-type": "application/json"}
+            mock_response.json.return_value = {"success": True}
+            mock_response.content = b'{"success": true}'
+            mock_request.return_value = mock_response
+
+            result = webhook.call(
+                method="POST",
+                url="https://api.example.com/webhook",
+                body={"test": "data"},
+            )
+            assert result["status_code"] == 200
+            assert result["body"]["success"] is True
+
+    def test_webhook_basic_auth(self):
+        from app.integrations.webhook import WebhookIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {"url": "https://api.example.com"}
+        webhook = WebhookIntegration(creds)
+
+        with patch("requests.request") as mock_request:
+            mock_response = MagicMock()
+            mock_response.status_code = 200
+            mock_response.text = '{"ok": true}'
+            mock_response.headers = {"content-type": "application/json"}
+            mock_response.json.return_value = {"ok": True}
+            mock_response.content = b'{"ok": true}'
+            mock_request.return_value = mock_response
+
+            result = webhook.call(
+                method="POST",
+                url="https://api.example.com",
+                auth={"type": "basic", "username": "user", "password": "pass"},
+            )
+            assert result["status_code"] == 200
+
+    def test_webhook_bearer_auth(self):
+        from app.integrations.webhook import WebhookIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {"url": "https://api.example.com"}
+        webhook = WebhookIntegration(creds)
+
+        with patch("requests.request") as mock_request:
+            mock_response = MagicMock()
+            mock_response.status_code = 200
+            mock_response.text = "{}"
+            mock_response.headers = {}
+            mock_response.json.side_effect = Exception("No JSON")
+            mock_response.content = b"{}"
+            mock_request.return_value = mock_response
+
+            result = webhook.call(
+                method="GET",
+                url="https://api.example.com",
+                auth={"type": "bearer", "token": "abc123"},
+            )
+            assert result["status_code"] == 200
+
+    def test_webhook_api_key_auth(self):
+        from app.integrations.webhook import WebhookIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {"url": "https://api.example.com"}
+        webhook = WebhookIntegration(creds)
+
+        with patch("requests.request") as mock_request:
+            mock_response = MagicMock()
+            mock_response.status_code = 200
+            mock_response.text = "{}"
+            mock_response.headers = {}
+            mock_response.json.side_effect = Exception("No JSON")
+            mock_response.content = b"{}"
+            mock_request.return_value = mock_response
+
+            result = webhook.call(
+                method="GET",
+                url="https://api.example.com",
+                auth={"type": "api_key", "key_name": "X-API-Key", "key_value": "secret123"},
+            )
+            assert result["status_code"] == 200
+
+    def test_webhook_retry_on_server_error(self):
+        from app.integrations.webhook import WebhookIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {"url": "https://api.example.com"}
+        webhook = WebhookIntegration(creds)
+
+        with patch("requests.request") as mock_request:
+            with patch("time.sleep"):
+                # First call returns 500, second returns 200
+                mock_response_500 = MagicMock()
+                mock_response_500.status_code = 500
+                mock_response_500.text = "Server Error"
+
+                mock_response_200 = MagicMock()
+                mock_response_200.status_code = 200
+                mock_response_200.text = '{"ok": true}'
+                mock_response_200.headers = {"content-type": "application/json"}
+                mock_response_200.json.return_value = {"ok": True}
+                mock_response_200.content = b'{"ok": true}'
+
+                mock_request.side_effect = [mock_response_500, mock_response_200]
+
+                result = webhook.call(method="POST", url="https://api.example.com", retries=3)
+                assert result["status_code"] == 200
+
+    def test_webhook_execute_action(self):
+        from app.integrations.webhook import WebhookIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {"url": "https://api.example.com"}
+        webhook = WebhookIntegration(creds)
+
+        with patch("requests.request") as mock_request:
+            mock_response = MagicMock()
+            mock_response.status_code = 200
+            mock_response.text = '{"result": "success"}'
+            mock_response.headers = {"content-type": "application/json"}
+            mock_response.json.return_value = {"result": "success"}
+            mock_response.content = b'{"result": "success"}'
+            mock_request.return_value = mock_response
+
+            result = webhook.execute("call", method="POST", url="https://api.example.com")
+            assert result["status_code"] == 200
+
+    def test_webhook_parse_response_json(self):
+        from app.integrations.webhook import WebhookIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {"url": "https://api.example.com"}
+        webhook = WebhookIntegration(creds)
+
+        mock_response = MagicMock()
+        mock_response.text = '{"data": "value"}'
+        mock_response.headers = {"content-type": "application/json"}
+        mock_response.json.return_value = {"data": "value"}
+
+        result = webhook._parse_response(mock_response)
+        assert result == {"data": "value"}
+
+    def test_webhook_parse_response_text(self):
+        from app.integrations.webhook import WebhookIntegration
+        from unittest.mock import patch, MagicMock
+
+        creds = {"url": "https://api.example.com"}
+        webhook = WebhookIntegration(creds)
+
+        mock_response = MagicMock()
+        mock_response.text = "Plain text response"
+        mock_response.headers = {"content-type": "text/plain"}
+
+        result = webhook._parse_response(mock_response)
+        assert result == "Plain text response"
+
+    def test_webhook_parse_response_empty(self):
+        from app.integrations.webhook import WebhookIntegration
+
+        creds = {"url": "https://api.example.com"}
+        webhook = WebhookIntegration(creds)
+
+        from unittest.mock import MagicMock
+        mock_response = MagicMock()
+        mock_response.text = ""
+
+        result = webhook._parse_response(mock_response)
+        assert result is None

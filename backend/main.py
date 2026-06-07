@@ -7,6 +7,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 import logging
 
+# Import caching middleware
+from app.middleware.caching import CachingMiddleware, CacheInvalidationMiddleware
+
 # Import routers (with try/except for optional modules)
 try:
     from routers import (
@@ -42,6 +45,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Configure caching middleware (order matters: invalidation first, then caching)
+app.add_middleware(CacheInvalidationMiddleware)
+app.add_middleware(CachingMiddleware)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

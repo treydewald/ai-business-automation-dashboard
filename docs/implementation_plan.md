@@ -2491,14 +2491,14 @@ Tier 2
 
 **Execution Metadata**
 ```
-status: NOT STARTED
+status: COMPLETED
 group: Integration-System
 execution_scope:
   group: Integration-System
-  owned_by: null
+  owned_by: Worker-haiku-20260607-pool-system
   file_boundary: strictly_enforced
 locked: false
-assigned_worker: null
+assigned_worker: Worker-haiku-20260607-pool-system
 is_blocked: false
 depends_on: [Feature 23]
 group_candidate: false
@@ -2576,14 +2576,14 @@ Tier 2
 
 **Execution Metadata**
 ```
-status: NOT STARTED
+status: IN_PROGRESS
 group: Integration-System
 execution_scope:
   group: Integration-System
-  owned_by: null
+  owned_by: Worker-haiku-20260607-pool-system
   file_boundary: strictly_enforced
 locked: false
-assigned_worker: null
+assigned_worker: Worker-haiku-20260607-pool-system
 is_blocked: false
 depends_on: [Feature 23]
 group_candidate: false
